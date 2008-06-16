@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" verticalAlign="middle">
+	<mx:HBox width="48" height="48" horizontalAlign="center" verticalAlign="middle" cornerRadius="24" backgroundColor="#FFFFFF" borderColor="#FFFFFF" borderStyle="solid" alpha="0.67">
+		<mx:Image source="@Embed('./spinner.swf', symbol='spinner')" scaleContent="false" autoLoad="true"/>	
+	</mx:HBox>
+	<mx:Label text="Loading data"/>
+</mx:VBox>

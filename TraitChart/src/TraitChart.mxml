@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:trait="trait.*" backgroundColor="#ffffff" preloader="preload.CustomPreloader" applicationComplete="onApplicationComplete(event);">
+	<mx:Style source="theme/flat.css"/>
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import trait.LoadingNotice;
+
+			import flare.animate.Transitioner;
+			import flare.data.DataSet;
+			import flare.vis.Visualization;
+			import flare.vis.data.Data;
+			import flare.vis.data.DataSprite;
+			import flare.vis.data.render.ShapeRenderer;
+			import flare.vis.operator.encoder.ColorEncoder;
+			import flare.vis.operator.encoder.SizeEncoder;
+			import flare.vis.operator.filter.VisibilityFilter;
+			import flare.vis.operator.layout.AxisLayout;
+			import flare.vis.operator.layout.Layout;
+			import flare.vis.palette.ColorPalette;
+			import flare.vis.palette.SizePalette;
+			import flare.vis.scale.QuantitativeScale;
+			import flare.vis.scale.ScaleType;
+			import flare.vis.util.graphics.Transforms;
+			
+			import flash.geom.Transform;
+			import flash.geom.Matrix;
+
+			import mx.containers.HBox;
+			import mx.controls.Menu;
+			import mx.effects.Rotate;
+			import mx.events.ItemClickEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			private var _loadingNotice:UIComponent;
+			
+			[Bindable]
+			private var _fieldSet:Array = new Array();
+			
+			[Bindable]
+			private var _dataSet:Data = new Data();
+			
+			[Bindable]
+			private var _xField:String = "data.x";
+			
+			[Bindable]
+			private var _yField:String = "data.y";
+			
+			[Bindable]
+			private var _sizeField:String = "data.size";
+			
+			[Bindable]
+			private var _colorField:String = "data.color";
+			
+			private function onApplicationComplete(event:FlexEvent):void
+			{
+				if (dataService.url)
+				{
+					// give feedback
+					_loadingNotice = PopUpManager.createPopUp(this, LoadingNotice, true) as UIComponent;
+					PopUpManager.centerPopUp(_loadingNotice);
+					// send HTTP request
+					dataService.send();
+				}
+			}
+			
+			private function onHTTPServiceResult(event:ResultEvent):void
+			{
+				// remove loading notice
+				PopUpManager.removePopUp(_loadingNotice);
+				
+				// populate the fieldset data fields and controls
+				_fieldSet = new Array();
+				var fs:XMLList = event.result.fieldset.f;
+
+				// declare these two iterator variables here so that the compiler
+				// stops giving us duplicate variable warnings when we reuse them
+				var f:XML, d:XML;
+
+				for each (f in fs)
+				{
+					_fieldSet.push({
+						data: f.@name,
+						label: f.@label,
+						tooltip: f.@tip,
+						defaultProperty: f.@property,
+						defaultScale: f.@scale
+					});
+					
+					// now handle the intricacies dictated by the property attribute
+					// note: for some reason, a switch statement doesn't work here
+					if (f.@property == "x")
+					{
+						_xField = "data." + f.@name;
+						horizontalAxisComboBox.selectedIndex = _fieldSet.length - 1;
+					}
+					else if (f.@property == "y")
+					{
+						_yField = "data." + f.@name;
+						verticalAxisComboBox.selectedIndex = _fieldSet.length - 1;
+					}
+					else if (f.@property == "size")
+					{
+						_sizeField = "data." + f.@name;
+						sizeComboBox.selectedIndex = _fieldSet.length - 1;
+					}
+					else if (f.@property == "color")
+					{
+						_colorField = "data." + f.@name;
+						colorComboBox.selectedIndex = _fieldSet.length - 1;
+					}
+				}
+				
+				// now deal with the data points
+				var ds:XMLList = event.result.dataset.d;
+				for each (d in ds)
+				{
+					// use an array to populate the attributes for each node
+					var arr:Array = new Array();
+					
+					//TODO: figure out if this is a problem if we don't have a label...
+					arr["label"] = d.label.text().toString();
+					
+					// now load the rest of the attributes
+					for each (f in d.f)
+					{
+						var s:String = f.text().toString();	
+						// try to convert to Number if possible
+						var n:Number = parseFloat(s);
+						// assign the value
+						arr[f.@name] = isNaN(n) ? s : n;
+					}
+
+					_dataSet.addNode(arr);
+				}
+				
+				traitVis.dataSet = _dataSet;
+				traitVis.setDisplayProperties(_xField, _yField, _sizeField, _colorField);
+				
+				// set more advanced properties
+				var xScale:String = _fieldSet[horizontalAxisComboBox.selectedIndex]["defaultScale"];
+				var yScale:String = _fieldSet[verticalAxisComboBox.selectedIndex]["defaultScale"];
+				setAxesScaleType(xScale, yScale);
+				onSizeSliderInitialize();
+				onColorListInitialize();
+			}
+			
+			private function setAxesScaleType(xScale:String, yScale:String):void
+			{
+				switch (xScale)
+				{
+				case "categories":
+					traitVis.axisLayout.xScaleType = ScaleType.CATEGORIES;
+//					horizontalAxisToggleButton.enabled = false; // the disabled skin looks like crap!
+					horizontalAxisToggleButton.selectedIndex = -1;
+					horizontalAxisToggleButton.alpha = 0.3;
+					break;
+				case "linear":
+				case "unsigned-linear":
+					traitVis.axisLayout.xScaleType = ScaleType.LINEAR;
+					horizontalAxisToggleButton.selectedIndex = 0;
+//					horizontalAxisToggleButton.enabled = true;
+					horizontalAxisToggleButton.alpha = 1;
+					break;
+				case "log":
+				case "unsigned-log":
+					traitVis.axisLayout.xScaleType = ScaleType.LOG;
+					horizontalAxisToggleButton.selectedIndex = 1;
+//					horizontalAxisToggleButton.enabled = true;
+					horizontalAxisToggleButton.alpha = 1;
+					break;
+				case "time":
+					traitVis.axisLayout.xScaleType = ScaleType.TIME;
+//					horizontalAxisToggleButton.enabled = false;
+					horizontalAxisToggleButton.selectedIndex = -1;
+					horizontalAxisToggleButton.alpha = 0.3;
+					break;
+				}
+				
+				switch (yScale)
+				{
+				case "categories":
+					traitVis.axisLayout.yScaleType = ScaleType.CATEGORIES;
+//					verticalAxisToggleButton.enabled = false; // the disabled skin looks like crap!
+					verticalAxisToggleButton.selectedIndex = -1;
+					verticalAxisToggleButton.alpha = 0.3;
+					break;
+				case "linear":
+				case "unsigned-linear":
+					traitVis.axisLayout.yScaleType = ScaleType.LINEAR;
+					verticalAxisToggleButton.selectedIndex = 0;
+//					verticalAxisToggleButton.enabled = true;
+					verticalAxisToggleButton.alpha = 1;
+					break;
+				case "log":
+				case "unsigned-log":
+					traitVis.axisLayout.yScaleType = ScaleType.LOG;
+					verticalAxisToggleButton.selectedIndex = 1;
+//					verticalAxisToggleButton.enabled = true;
+					verticalAxisToggleButton.alpha = 1;
+					break;
+				case "time":
+					traitVis.axisLayout.yScaleType = ScaleType.TIME;
+//					verticalAxisToggleButton.enabled = false;
+					verticalAxisToggleButton.selectedIndex = -1;
+					verticalAxisToggleButton.alpha = 0.3;
+					break;
+				}
+			}
+			
+			private function onVerticalHBoxInitialize(event:Event):void
+			{
+				//FIXME: this is a dirty hack!
+				var r:Rotate = new Rotate();
+				r.angleFrom = 0;
+				r.angleTo = -90;
+				r.target = event.currentTarget;
+				r.play();
+				r.end();
+			}
+			
+			private function onVerticalHBoxUpdate(event:Event):void
+			{
+				//FIXME: this is a dirty hack!
+				verticalOptionsBar.width = verticalOptionsBarContainer.height;
+				verticalOptionsBar.setStyle("paddingTop", verticalOptionsBarContainer.width + 24);
+			}
+			
+			private function onAxesChange(event:Event):void
+			{
+				_xField = "data." + _fieldSet[horizontalAxisComboBox.selectedIndex]["data"];
+				_yField = "data." + _fieldSet[verticalAxisComboBox.selectedIndex]["data"];
+				traitVis.axisLayout = new AxisLayout(_xField, _yField);
+
+				// set more advanced properties
+				var xScale:String = _fieldSet[horizontalAxisComboBox.selectedIndex]["defaultScale"];
+				var yScale:String = _fieldSet[verticalAxisComboBox.selectedIndex]["defaultScale"];
+				setAxesScaleType(xScale, yScale);
+				traitVis.visualization.update(new Transitioner(0.4)).play();
+			}
+			
+			private function onSizeChange(event:Event):void 
+			{
+				_sizeField = "data." + _fieldSet[sizeComboBox.selectedIndex]["data"];
+				trace(sizeComboBox.selectedItem);
+				var se:SizeEncoder = new SizeEncoder(_sizeField, Data.NODES);
+				
+				// size according to preferences, if we remember them
+				var currentField:* = _fieldSet[sizeComboBox.selectedIndex];
+				
+				//TODO: decide if we should respect linear/log preferences for size ScaleType
+				if (currentField["defaultScale"] == "categories")
+					se.scaleType = ScaleType.CATEGORIES;
+				else
+					se.scaleType = ScaleType.LINEAR;
+
+				if (!isNaN(currentField["defaultMaxSize"]) && !isNaN(currentField["defaultMinSize"]))
+				{
+				    var p:SizePalette = se.palette as SizePalette;
+					p.minimumSize = currentField["defaultMinSize"];
+					p.maximumSize = currentField["defaultMaxSize"];
+					se.palette = p;
+				}
+				
+				traitVis.sizeEncoder = se;
+				traitVis.visualization.update(new Transitioner(0.4)).play();
+				this.onSizeSliderInitialize();
+			}
+			
+			private function onColorChange(event:Event):void
+			{
+				_colorField = "data." + _fieldSet[colorComboBox.selectedIndex]["data"];
+				var ce:ColorEncoder = new ColorEncoder(_colorField, Data.NODES, "fillColor");
+				
+				//TODO: color sensibly
+				var currentField:* = _fieldSet[colorComboBox.selectedIndex];
+
+				//TODO: decide if we should respect linear/log preferences for color ScaleType
+				if (currentField["defaultScale"] == "categories")
+					ce.scaleType = ScaleType.CATEGORIES;
+				else
+					ce.scaleType = ScaleType.LINEAR;
+
+				traitVis.colorEncoder = ce;
+				traitVis.visualization.update(new Transitioner(0.4)).play();
+				this.onColorListInitialize();
+			}
+			
+			private function onVerticalAxisToggleButtonClick(event:ItemClickEvent):void
+			{
+				// toggle between linear/log scale if applicable
+				var al:AxisLayout = traitVis.axisLayout;
+				
+				// first, check the current axis layout and don't do anything if it's not cool
+				if (al.yScaleType != ScaleType.LINEAR && al.yScaleType != ScaleType.LOG)
+				{
+					verticalAxisToggleButton.selectedIndex = -1;
+					return;
+				}
+				
+				// be a friendly program; remember these settings for next time...
+				var currentField:* = _fieldSet[verticalAxisComboBox.selectedIndex];
+				if (currentField["defaultScale"] == "linear" ||
+					currentField["defaultScale"] == "log")
+				{
+				    currentField["defaultScale"] = event.index == 0 ? "linear" : "log";
+				}
+				else if (currentField["defaultScale"] == "unsigned-linear" ||
+					currentField["defaultScale"] == "unsigned-log")
+				{
+				    currentField["defaultScale"] = event.index == 0 ? "unsigned-linear" : "unsigned-log";					
+				}
+				
+				// now, update our current settings
+				al.yScaleType = event.index == 0 ? ScaleType.LINEAR : ScaleType.LOG;
+				traitVis.visualization.update(new Transitioner(0.4)).play();
+			}
+			
+			private function onHorizontalAxisToggleButtonClick(event:ItemClickEvent):void
+			{
+				// toggle between linear/log scale if applicable
+				var al:AxisLayout = traitVis.axisLayout;
+				
+				// don't do anything if it's not cool
+				if (al.xScaleType != ScaleType.LINEAR && al.xScaleType != ScaleType.LOG)
+				{
+					horizontalAxisToggleButton.selectedIndex = -1;
+					return;
+				}
+	
+				// remember these settings for next time
+				var currentField:* = _fieldSet[horizontalAxisComboBox.selectedIndex];
+				if (currentField["defaultScale"] == "linear" ||
+					currentField["defaultScale"] == "log")
+				{
+				    currentField["defaultScale"] = event.index == 0 ? "linear" : "log";
+				}
+				else if (currentField["defaultScale"] == "unsigned-linear" ||
+					currentField["defaultScale"] == "unsigned-log")
+				{
+				    currentField["defaultScale"] = event.index == 0 ? "unsigned-linear" : "unsigned-log";					
+				}
+				
+				// now, update
+				al.xScaleType = event.index == 0 ? ScaleType.LINEAR : ScaleType.LOG;
+				traitVis.visualization.update(new Transitioner(0.4)).play();
+			}
+			
+			private function onSizeSliderInitialize(event:Event = null):void
+			{
+				// the gist of this is that we want to initialize the slider's
+				// values to match the max and min diameters of the circles we're
+				// plotting; this requires some acrobatics...
+				// first, we need to get the default shape renderer's default size
+				var scaleFactor:Number = ShapeRenderer.instance.defaultSize;
+				
+				// now we need to get the size palette min/max
+				var sp:SizePalette = traitVis.sizeEncoder.palette as SizePalette;
+				var min:Number = sp.minimumSize;
+				var max:Number = sp.maximumSize;
+				
+				// min circle diameter is given by 2 * Math.sqrt(min) * scaleFactor
+				// (same idea for max diameter)
+				var minDiameter:Number = 2 * Math.sqrt(min) * scaleFactor;
+				var maxDiameter:Number = 2 * Math.sqrt(max) * scaleFactor;
+				
+				// we want to make sure this doesn't exceed the bounds of our slider
+				sizeSlider.values = [Math.max(sizeSlider.minimum, minDiameter), Math.min(sizeSlider.maximum, maxDiameter)];
+				
+				// now, we we want to give the slider some labels
+				sizeSlider.maxValue = traitVis.sizeEncoder.scale.max as Number;
+				sizeSlider.minValue = traitVis.sizeEncoder.scale.min as Number;
+			}
+			
+			private function onSizeSliderChange(event:Event):void
+			{
+				// get the current values
+				var v:Array = sizeSlider.values;
+				// we also need to get the default shape renderer's default size
+				var scaleFactor:Number = ShapeRenderer.instance.defaultSize;
+				// now work backwards...
+				var min:Number = Math.pow((v[0] as Number) / 2 / scaleFactor, 2);
+				var max:Number = Math.pow((v[1] as Number) / 2 / scaleFactor, 2);
+				// set the values
+				var sp:SizePalette = traitVis.sizeEncoder.palette as SizePalette;
+				sp.minimumSize = min;
+				sp.maximumSize = max;
+				// remember these settings
+				var currentField:* = _fieldSet[sizeComboBox.selectedIndex];
+				currentField["defaultMinSize"] = sp.minimumSize;
+				currentField["defaultMaxSize"] = sp.maximumSize;
+			}
+			
+			private function onColorListInitialize(event:Event = null):void
+			{
+				// calculate the data to put into our legend
+				var cp:ColorPalette = traitVis.colorEncoder.palette as ColorPalette;
+				var legend:Array = new Array();
+				// a very important thing: traitVis.colorEncoder.scale.max;
+				
+				// declare these variables here so that the compiler
+				// stops giving us duplicate variable warnings when we reuse them
+				var c:uint, a:uint, af:Number, d:String;
+				
+				// we want to enumerate explicitly in this case
+				if (traitVis.colorEncoder.scaleType == ScaleType.CATEGORIES)
+				{
+					var v:Array = traitVis.colorEncoder.scale.values();
+					for (var j:uint = 0; j < v.length; j++)
+					{
+						c = cp.getColorByIndex(j);
+						a = c >>> 24; // extract the alpha channel
+						af = a / 255; // make the alpha a fraction
+						d = v[j] as String;
+						legend.push({alpha: af, color: c, description: d});
+					}
+				}
+				
+				// otherwise, just show colors for each quartile
+				else
+				{
+					var numSwatches:uint = 4;
+					for (var i:uint = 0; i < numSwatches; i++)
+					{
+						c = cp.getColor((numSwatches - 1 - i) / (numSwatches - 1));
+						a = c >>> 24; // extract the alpha channel
+						af = a / 255; // make the alpha a fraction
+						d = "";
+						if (i == 0)
+						{
+							if (traitVis.colorEncoder.scale.max)
+								d = traitVis.colorEncoder.scale.max.toString();
+							else
+								d = "0";
+						}
+						else if (i == numSwatches - 1)
+						{
+							if (traitVis.colorEncoder.scale.min)
+								d = traitVis.colorEncoder.scale.min.toString();
+							else
+								d = "0";
+						}
+						legend.push({alpha: af, color: c, description: d});
+					}
+				}
+				colorList.dataProvider = legend;
+			}
+			
+			private function onZoom():void
+			{
+				var vis:Visualization = traitVis.visualization;			
+/*
+				var t:Transitioner = new Transitioner(0.5);				
+				t.onStart = function():void { stage.quality = StageQuality.LOW; }
+				t.onEnd = function():void { stage.quality = StageQuality.HIGH; }
+*/
+				(vis.xyAxes.xAxis.axisScale as QuantitativeScale).dataMax = 10;
+				function bar(d:DataSprite):Boolean
+				{
+					return d.data.value1 < 10;
+				}
+				vis.operators.add(new VisibilityFilter(bar));
+				vis.update(new Transitioner(0.5)).play();
+			}
+		]]>
+	</mx:Script>
+	<mx:HTTPService id="dataService" url="http://snp-dev.med.harvard.edu/test-data.xml" resultFormat="e4x" result="onHTTPServiceResult(event);"/>
+	<!-- mx:HTTPService id="dataService" url="{this.parameters.data}" resultFormat="e4x" result="onHTTPServiceResult(event);"/ -->
+	<mx:HBox width="100%" height="100%" horizontalGap="0">
+		<mx:Grid id="mainGrid" width="100%" height="100%" horizontalGap="0" verticalGap="0" paddingLeft="12" paddingBottom="12" paddingRight="12">
+			<mx:GridRow width="100%" height="100%">
+				<mx:GridItem id="verticalOptionsBar" height="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#ffffff">
+					<mx:HBox id="verticalOptionsBarContainer" horizontalAlign="center" verticalAlign="middle" initialize="onVerticalHBoxInitialize(event);" updateComplete="onVerticalHBoxUpdate(event);">
+						<trait:RightAlignedComboBox id="verticalAxisComboBox" dataProvider="{_fieldSet}" change="onAxesChange(event);"/>
+						<mx:ToggleButtonBar id="verticalAxisToggleButton" itemClick="onVerticalAxisToggleButtonClick(event);" dataProvider="[Lin, Log]"/>
+					</mx:HBox>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%">
+					<trait:TraitVis id="traitVis" width="100%" height="100%"/>
+				</mx:GridItem>
+				<mx:GridItem id="sideOptionsBar" height="100%" verticalAlign="middle">
+					<mx:VBox id="sideOptionsBarContainer">
+						<mx:Panel layout="vertical" title="Size" width="144" horizontalAlign="center" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+							<mx:Spacer height="12" width="12"/>
+							<mx:ComboBox id="sizeComboBox" maxWidth="120" dataProvider="{_fieldSet}" change="onSizeChange(event);"/>
+							<mx:Spacer height="12" width="12"/>
+							<!-- TODO: fix the hack so that the slider thumb width isn't hardcoded -->
+							<trait:CustomVSlider id="sizeSlider" width="100%" height="90" minimum="0" maximum="{sizeSlider.height - 12}" initialize="onSizeSliderInitialize(event);" change="onSizeSliderChange(event);"/>
+							<mx:Spacer height="12" width="12"/>
+						</mx:Panel>
+						<mx:Panel layout="vertical" title="Color" width="144" horizontalAlign="center" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+							<mx:Spacer height="12" width="12"/>
+							<mx:ComboBox id="colorComboBox" maxWidth="120" dataProvider="{_fieldSet}" change="onColorChange(event);"/>
+							<mx:Spacer height="12" width="12"/>
+							<mx:List id="colorList" width="100%" height="102" borderStyle="none" rowHeight="22" paddingTop="0" paddingLeft="6" paddingBottom="0" paddingRight="6" selectable="false" horizontalScrollPolicy="off" initialize="onColorListInitialize(event);">
+								<mx:itemRenderer>
+									<!-- TODO: fix the numbers so that the legend will always be centered regardless of list width -->
+									<mx:Component>
+										<mx:HBox width="100%" verticalAlign="middle" horizontalGap="6">
+											<mx:Text text="{data.description}" textAlign="right" width="42"/>
+											<mx:Canvas backgroundAlpha="{data.alpha}" backgroundColor="{data.color}" height="100%" width="22"/>
+										</mx:HBox>
+									</mx:Component>
+								</mx:itemRenderer>
+							</mx:List>
+						</mx:Panel>
+						<!-- mx:Button label="Zoom!" click="onZoom();"/ -->
+					</mx:VBox>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%">
+				<mx:GridItem/>
+				<mx:GridItem id="horizontalOptionsBar" width="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#ffffff">
+					<mx:ComboBox id="horizontalAxisComboBox" dataProvider="{_fieldSet}" change="onAxesChange(event);"/>
+			    	<mx:ToggleButtonBar id="horizontalAxisToggleButton" itemClick="onHorizontalAxisToggleButtonClick(event);" dataProvider="[Lin, Log]"/>
+				</mx:GridItem>
+				<mx:GridItem/>
+			</mx:GridRow>
+		</mx:Grid>
+	</mx:HBox>
+</mx:Application>

@@ -1,0 +1,44 @@
+#!/usr/bin/python
+# Filename: config.py
+
+UPLOAD_DIR = None
+SEQ_EXTRACT_CMD = "twoBitToFa /genomes/human_genomic_ref.2bit -seqList='%(in)s' '%(out)s'"
+
+DB_HOST = "localhost"
+
+DB_READ_USER = "reader"
+DB_READ_PASSWD = "shakespeare"
+DB_READ_DATABASE = "caliban"
+
+DB_WRITE_USER = "writer"
+DB_WRITE_PASSWD = "shakespeare"
+DB_WRITE_DATABASE = "ariel"
+
+CHROMOSOME_NAMES = {
+	"1": "gi|89161185|ref|NC_000001.9|NC_000001",
+	"2": "gi|89161199|ref|NC_000002.10|NC_000002",
+	"3": "gi|89161205|ref|NC_000003.10|NC_000003",
+	"4": "gi|89161207|ref|NC_000004.10|NC_000004",
+	"5": "gi|51511721|ref|NC_000005.8|NC_000005",
+	"6": "gi|89161210|ref|NC_000006.10|NC_000006",
+	"7": "gi|89161213|ref|NC_000007.12|NC_000007",
+	"8": "gi|51511724|ref|NC_000008.9|NC_000008",
+	"9": "gi|89161216|ref|NC_000009.10|NC_000009",
+	"10": "gi|89161187|ref|NC_000010.9|NC_000010",
+	"11": "gi|51511727|ref|NC_000011.8|NC_000011",
+	"12": "gi|89161190|ref|NC_000012.10|NC_000012",
+	"13": "gi|51511729|ref|NC_000013.9|NC_000013",
+	"14": "gi|51511730|ref|NC_000014.7|NC_000014",
+	"15": "gi|51511731|ref|NC_000015.8|NC_000015",
+	"16": "gi|51511732|ref|NC_000016.8|NC_000016",
+	"17": "gi|51511734|ref|NC_000017.9|NC_000017",
+	"18": "gi|51511735|ref|NC_000018.8|NC_000018",
+	"19": "gi|42406306|ref|NC_000019.8|NC_000019",
+	"20": "gi|51511747|ref|NC_000020.9|NC_000020",
+	"21": "gi|51511750|ref|NC_000021.7|NC_000021",
+	"22": "gi|89161203|ref|NC_000022.9|NC_000022",
+	"X": "gi|89161218|ref|NC_000023.9|NC_000023",
+	"Y": "gi|89161220|ref|NC_000024.8|NC_000024",
+	"M": "gi|17981852|ref|NC_001807.4|NC_001807",
+	"MT": "gi|17981852|ref|NC_001807.4|NC_001807"
+} # either M or MT OK

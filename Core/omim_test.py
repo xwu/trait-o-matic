@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Filename: omim_text.py
+# Filename: omim_test.py
 
 # INPUT: OMIM (txt)
 # for each entry in txt:

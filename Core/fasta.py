@@ -7,10 +7,14 @@
 # ---
 # This code is part of the Trait-o-matic project and is governed by its license.
 
+import textwrap
+
 class FastaRecord(object):
 	def __init__(self, title, sequence):
 		self.title = title
 		self.sequence = sequence
+	def __str__(self):
+		return ">" + self.title + "\n" + textwrap.fill(self.sequence, 50)
 
 class SyntaxError(object):
 	pass

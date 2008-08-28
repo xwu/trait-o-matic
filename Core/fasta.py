@@ -3,7 +3,6 @@
 
 # A quick-and-dirty FASTA file parser
 # based in part on the example at <http://www.dalkescientific.com/writings/NBN/parsing.html>
-# and in part on the version by Thomas Mailund at <http://www.daimi.au.dk/~mailund/python/fasta.py>
 # ---
 # This code is part of the Trait-o-matic project and is governed by its license.
 
@@ -16,22 +15,11 @@ class FastaRecord(object):
 	def __str__(self):
 		return ">" + self.title + "\n" + textwrap.fill(self.sequence, 50)
 
-class SyntaxError(object):
-	pass
-
-def _fasta_iterator(src):
-	# open the file if we're only provided a path
-	if isinstance(src, str):
-		f = open(src)
-	elif isinstance(src, file):
-		f = src
-	else:
-		raise TypeError
-	
+def _fasta_iterator(f):	
 	# get started with the first title
 	title = f.readline()	
 	if not title.startswith(">"):
-		raise SyntaxError
+		raise Exception("not a FASTA file")
 	title = title[1:].rstrip()
 	
 	# start reading in sequence
@@ -51,20 +39,23 @@ def _fasta_iterator(src):
 	
 	# we're at the end of the file; yield the last record
 	yield FastaRecord(title, "".join(sequence))
-	
-	# also, close the file if we opened it
-	if isinstance(src, str):
-		f.close()
 
 class FastaFile:
 	def __init__(self, src):
-		self.__iterator = _fasta_iterator(src)
+		# try to open the file, in case we're given a path
+		try:
+			f = open(src)
+		# if that doesn't work, treat the argument itself as a file
+		except TypeError:
+			f = src
+		self.iterator = _fasta_iterator(f)
+		self.file = f
 	
 	def __iter__(self):
 		return self
 	
 	def next(self):
-		return self.__iterator.next()
+		return self.iterator.next()
 	
 	def __getitem__(self, key):
 		key = key.rstrip()
@@ -73,8 +64,10 @@ class FastaFile:
 				return record
 		return None
 	
-def get_sequence(src, title):
-	return FastaFile(src)[title]
-	
+	def close(self):
+		assert (self.file is not None)
+		self.file.close()
+		self.file = None
+
 def input(src):
 	return FastaFile(src)

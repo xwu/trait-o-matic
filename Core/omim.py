@@ -30,9 +30,6 @@ class OMIMAllelicVariant(object):
 	def __str__(self):
 		return self.title[0]
 
-class SyntaxError(object):
-	pass
-
 def _omim_number(f, d):
 	d["no"] = f.readline().strip()
 
@@ -85,6 +82,13 @@ def _omim_allelic_variants(f, d):
 
 		# read the title(s)
 		title = [f.readline().strip()]
+		
+		# handle the special case where the variants have been moved or removed
+		if title[0].startswith("MOVED TO") or title[0].startswith("REMOVED FROM"):
+			# we're done with this variant and not storing it
+			continue
+		
+		# otherwise, continue reading the title(s)
 		alt_titles = []
 		while True:
 			line = f.readline().strip()
@@ -251,18 +255,10 @@ def _omim_miscellaneous_field(f, d):
 	# now that we're done, move back
 	f.seek(-1, 1)
 
-def _omim_iterator(src):
-	# open the file if we're only provided a path
-	if isinstance(src, str):
-		f = open(src)
-	elif isinstance(src, file):
-		f = src
-	else:
-		raise TypeError
-	
+def _omim_iterator(f):
 	# get started with the first record
 	if not f.readline().strip() == "*RECORD*":
-		raise SyntaxError
+		raise Exception("expected *RECORD* line not found")
 	
 	record_dictionary = {}
 	while True:
@@ -282,7 +278,7 @@ def _omim_iterator(src):
 		
 		# otherwise, continue parsing fields
 		if not field.startswith("*FIELD*"):
-			raise SyntaxError
+			raise Exception("expected *FIELD* line not found")
 		field = field[8:]
 		
 		parse = {
@@ -297,22 +293,24 @@ def _omim_iterator(src):
 			"CD": _omim_creation_date,
 			"ED": _omim_edit_history
 		}
-		
 		parse.get(field, _omim_miscellaneous_field)(f, record_dictionary)
-	
-	# also, close the file if we opened it
-	if isinstance(src, str):
-		f.close()
 
 class OMIMFile:
 	def __init__(self, src):
-		self.__iterator = _omim_iterator(src)
+		# try to open the file, in case we're given a path
+		try:
+			f = open(src)
+		# if that doesn't work, treat the argument itself as a file
+		except TypeError:
+			f = src
+		self.iterator = _omim_iterator(f)
+		self.file = f
 	
 	def __iter__(self):
 		return self
 	
 	def next(self):
-		return self.__iterator.next()
+		return self.iterator.next()
 	
 	def __getitem__(self, key):
 		key = key.strip()
@@ -321,8 +319,10 @@ class OMIMFile:
 				return record
 		return None
 	
-def get_record(src, number):
-	return OMIMFile(src)[number]
-	
+	def close(self):
+		assert (self.file is not None)
+		self.file.close()
+		self.file = None
+
 def input(src):
 	return OMIMFile(src)

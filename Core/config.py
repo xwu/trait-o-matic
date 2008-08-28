@@ -2,6 +2,10 @@
 # Filename: config.py
 
 UPLOAD_DIR = None
+MIN_PARASOL_FILE_SIZE = None
+
+BLAT_CMD = None
+GFCLIENT_CMD = None
 SEQ_EXTRACT_CMD = "twoBitToFa /genomes/human_genomic_ref.2bit -seqList='%(in)s' '%(out)s'"
 
 DB_HOST = "localhost"
@@ -42,3 +46,5 @@ CHROMOSOME_NAMES = {
 	"M": "gi|17981852|ref|NC_001807.4|NC_001807",
 	"MT": "gi|17981852|ref|NC_001807.4|NC_001807"
 } # either M or MT OK
+
+# CUTOFF_SCORE = None

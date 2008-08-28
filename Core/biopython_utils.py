@@ -136,7 +136,7 @@ def translate(seq, table="Standard", stop_symbol="*"):
 	"""
 	Translate a DNA sequence into amino acids (string).
 
-	table - Which codon table to use?  This can be either a name
+	table - Which codon table to use? This is a name
 			"Standard" or "Vertebrate Mitochondrial"
 	"""
 	table = codon_tables[table]

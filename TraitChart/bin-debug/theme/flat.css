@@ -44,6 +44,13 @@ List {
 	padding-right: 9;
 }
 
+ScrollBar {
+	track-colors: #fff, #fff;
+	thumb-down-skin: ClassReference('trait.CustomScrollThumbSkin');
+	thumb-over-skin: ClassReference('trait.CustomScrollThumbSkin');
+	thumb-up-skin: ClassReference('trait.CustomScrollThumbSkin');
+}
+
 ToolTip {
 	background-color: #fff;
 	color: #222;

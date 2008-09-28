@@ -2,16 +2,18 @@ package trait
 {
 	import flare.display.TextSprite;
 	import flare.flex.FlareVis;
+	import flare.scale.ScaleType;
+	import flare.util.palette.ColorPalette;
+	import flare.util.palette.SizePalette;
 	import flare.vis.controls.HoverControl;
+	import flare.vis.controls.SelectionControl;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
+	import flare.vis.events.SelectionEvent;
 	import flare.vis.operator.encoder.ColorEncoder;
 	import flare.vis.operator.encoder.PropertyEncoder;
 	import flare.vis.operator.encoder.SizeEncoder;
 	import flare.vis.operator.layout.AxisLayout;
-	import flare.vis.palette.ColorPalette;
-	import flare.vis.scale.ScaleType;
-	import flare.vis.util.Filters;
 	
 	import flash.events.Event;
 	import flash.filters.DropShadowFilter;
@@ -19,6 +21,7 @@ package trait
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import mx.controls.ToolTip;
 	import mx.events.FlexEvent;
 	import mx.events.ResizeEvent;
 	import mx.managers.ToolTipManager;
@@ -86,50 +89,59 @@ package trait
 			this.visualization.continuousUpdates = true;
 			
 			// add mouse over
-			var hc:HoverControl = new HoverControl(this.visualization, Filters.isDataSprite, HoverControl.MOVE_AND_RETURN);
-			
-			hc.onRollOver = function(d:DataSprite):void
-			{
-				if (!d.visible)
-					return;
-				var topLeft:Point = d.localToGlobal(new Point(0, 0));
-				d.filters = [new GlowFilter(0xffffff, 1, 6, 6, 10), new DropShadowFilter(0, 90, 0x884cb825, 1, 4, 4, 2)];
-				if (!d.data.toolTip)
-					d.data.toolTip = ToolTipManager.createToolTip(d.data.label, topLeft.x - d.width / 2, topLeft.y + d.height / 2);
-			};
-			
-			hc.onRollOut = function(d:DataSprite):void
-			{
-				if (!d.data.isSelected)
-					d.filters = null;
-				if (d.data.toolTip)
+			var hc:HoverControl = new HoverControl(DataSprite, HoverControl.MOVE_AND_RETURN,
+				function(e:SelectionEvent):void
 				{
-					ToolTipManager.destroyToolTip(d.data.toolTip);
-					delete d.data.toolTip;
+					var d:DataSprite = e.item
+					if (!d.visible)
+						return;
+					var topLeft:Point = d.localToGlobal(new Point(0, 0));
+					d.filters = [new GlowFilter(0xffffff, 1, 6, 6, 10), new DropShadowFilter(0, 90, 0x884cb825, 1, 4, 4, 2)];
+					if (!d.data.toolTip)
+						d.data.toolTip = ToolTipManager.createToolTip(d.data.label, topLeft.x - d.width / 2, topLeft.y + d.height / 2);
+				},
+				function(e:SelectionEvent):void
+				{
+					var d:DataSprite = e.item
+					if (!d.data.isSelected)
+						d.filters = null;
+					if (d.data.toolTip)
+					{
+						ToolTipManager.destroyToolTip(d.data.toolTip);
+						delete d.data.toolTip;
+					}
 				}
-			};
-			
-//			this.visualization.controls.add(hc);
+			);
+			this.visualization.controls.add(hc);
 
 			// add selection control
-			var sc:CustomSelectionControl = new CustomSelectionControl(this.visualization, Filters.isDataSprite, this.visualization);
-			
-			sc.onSelect = function(d:DataSprite):void
-			{
-				if (!d.visible)
-					return;
-				var topLeft:Point = d.localToGlobal(new Point(0, 0));
-				d.data.isSelected = true;
-				d.filters = [new GlowFilter(0xffffff, 1, 6, 6, 10), new DropShadowFilter(0, 90, 0x884cb825, 1, 4, 4, 2)];
-			};
-			
-			sc.onDeselect = function(d:DataSprite):void
-			{
-				d.data.isSelected = false;
-				d.filters = null;
-			};
-			
-//			this.visualization.controls.add(sc);
+			var sc:SelectionControl = new SelectionControl(DataSprite,
+				function(e:SelectionEvent):void
+				{
+					for each (var d:DataSprite in e.items)
+					{
+						if (!d.visible)
+							return;
+						var topLeft:Point = d.localToGlobal(new Point(0, 0));
+						d.data.isSelected = true;
+						d.filters = [new GlowFilter(0xffffff, 1, 6, 6, 10), new DropShadowFilter(0, 90, 0x884cb825, 1, 4, 4, 2)];
+					}
+				},
+				function(e:SelectionEvent):void
+				{
+					for each (var d:DataSprite in e.items)
+					{
+						d.data.isSelected = false;
+						d.filters = null;
+					}
+				},
+			this.visualization);
+			sc.fillColor = 0x999999;
+			sc.fillAlpha = 0.3;
+			sc.lineWidth = 1;
+			sc.lineColor = 0x999999;
+			sc.lineAlpha = 0.4;
+			this.visualization.controls.add(sc);
 		}
 
 		public function setDisplayProperties(xField:String, yField:String, sizeField:String, colorField:String):void {
@@ -146,15 +158,12 @@ package trait
 			this.visualization.operators.setOperatorAt(_axisLayoutPosition, al);
 
 			// set size properties
-			var se:SizeEncoder = new SizeEncoder(sizeField, Data.NODES, ScaleType.LINEAR);
-//			var p:SizePalette = se.palette as SizePalette;
-//			p.maximumSize = 24;
-//			p.minimumSize = 1;
-//			se.palette = p;
+			var se:SizeEncoder = new SizeEncoder(sizeField, Data.NODES, new SizePalette(1, 24));
+			se.scale.scaleType = ScaleType.LINEAR;
 			this.visualization.operators.setOperatorAt(_sizeEncoderPosition, se);
 
 			// set color properties
-			var ce:ColorEncoder = new ColorEncoder(colorField, Data.NODES, "fillColor", ScaleType.LINEAR, 10, ColorPalette.ramp(0x224cb825, 0x884cb825));
+			var ce:ColorEncoder = new ColorEncoder(colorField, Data.NODES, "fillColor", ScaleType.LINEAR);
 			this.visualization.operators.setOperatorAt(_colorEncoderPosition, ce);
 
 //			this.visualization.operators.add(new ShapeEncoder(field1));	

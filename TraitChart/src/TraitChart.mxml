@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:trait="trait.*" backgroundColor="#ffffff" preloader="preload.CustomPreloader" applicationComplete="onApplicationComplete(event);">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:trait="trait.*" backgroundColor="#ffffff" preloader="trait.CustomPreloader" applicationComplete="onApplicationComplete(event);">
 	<mx:Style source="theme/flat.css"/>
 	<mx:Script>
 		<![CDATA[
-			import mx.core.UIComponent;
 			import trait.LoadingNotice;
 
 			import flare.animate.Transitioner;
 			import flare.data.DataSet;
+			import flare.scale.QuantitativeScale;
+			import flare.scale.ScaleType;
+			import flare.util.Displays;
+			import flare.util.palette.ColorPalette;
+			import flare.util.palette.SizePalette;
 			import flare.vis.Visualization;
 			import flare.vis.data.Data;
 			import flare.vis.data.DataSprite;
@@ -17,17 +21,13 @@
 			import flare.vis.operator.filter.VisibilityFilter;
 			import flare.vis.operator.layout.AxisLayout;
 			import flare.vis.operator.layout.Layout;
-			import flare.vis.palette.ColorPalette;
-			import flare.vis.palette.SizePalette;
-			import flare.vis.scale.QuantitativeScale;
-			import flare.vis.scale.ScaleType;
-			import flare.vis.util.graphics.Transforms;
 			
 			import flash.geom.Transform;
 			import flash.geom.Matrix;
 
 			import mx.containers.HBox;
 			import mx.controls.Menu;
+			import mx.core.UIComponent;
 			import mx.effects.Rotate;
 			import mx.events.ItemClickEvent;
 			import mx.events.FlexEvent;
@@ -149,83 +149,87 @@
 			
 			private function setAxesScaleType(xScale:String, yScale:String):void
 			{
+				traitVis.axisLayout.xScale.labelFormat = null;
 				switch (xScale)
 				{
 				case "categories":
-					traitVis.axisLayout.xScaleType = ScaleType.CATEGORIES;
-//					horizontalAxisToggleButton.enabled = false; // the disabled skin looks like crap!
+					traitVis.axisLayout.xScale.scaleType = ScaleType.CATEGORIES;
+					horizontalAxisToggleButton.enabled = false; // the disabled skin looks like crap!
+					horizontalAxisToggleButton.visible = false;
+					horizontalAxisToggleButtonGridItem.width = 0;
 					horizontalAxisToggleButton.selectedIndex = -1;
-					horizontalAxisToggleButton.alpha = 0.3;
+					break;
+				case "time":
+					traitVis.axisLayout.xScale.scaleType = ScaleType.TIME;
+					horizontalAxisToggleButton.enabled = false;
+					horizontalAxisToggleButton.visible = false;
+					horizontalAxisToggleButtonGridItem.width = 0;
+					horizontalAxisToggleButton.selectedIndex = -1;
 					break;
 				case "linear":
 				case "unsigned-linear":
-					traitVis.axisLayout.xScaleType = ScaleType.LINEAR;
+					traitVis.axisLayout.xScale.scaleType = ScaleType.LINEAR;
+					traitVis.axisLayout.xScale.labelFormat = "0.##";
 					horizontalAxisToggleButton.selectedIndex = 0;
-//					horizontalAxisToggleButton.enabled = true;
-					horizontalAxisToggleButton.alpha = 1;
+					horizontalAxisToggleButton.enabled = true;
+					horizontalAxisToggleButton.visible = true;
+					horizontalAxisToggleButtonGridItem.percentWidth = 0;
 					break;
 				case "log":
 				case "unsigned-log":
-					traitVis.axisLayout.xScaleType = ScaleType.LOG;
+					traitVis.axisLayout.xScale.scaleType = ScaleType.LOG;
+					traitVis.axisLayout.xScale.labelFormat = "0.##";
 					horizontalAxisToggleButton.selectedIndex = 1;
-//					horizontalAxisToggleButton.enabled = true;
-					horizontalAxisToggleButton.alpha = 1;
-					break;
-				case "time":
-					traitVis.axisLayout.xScaleType = ScaleType.TIME;
-//					horizontalAxisToggleButton.enabled = false;
-					horizontalAxisToggleButton.selectedIndex = -1;
-					horizontalAxisToggleButton.alpha = 0.3;
+					horizontalAxisToggleButton.enabled = true;
+					horizontalAxisToggleButton.visible = true;
+					horizontalAxisToggleButtonGridItem.percentWidth = 0;
 					break;
 				}
 				
+				traitVis.axisLayout.yScale.labelFormat = null;
 				switch (yScale)
 				{
 				case "categories":
-					traitVis.axisLayout.yScaleType = ScaleType.CATEGORIES;
-//					verticalAxisToggleButton.enabled = false; // the disabled skin looks like crap!
+					traitVis.axisLayout.yScale.scaleType = ScaleType.CATEGORIES;
+					verticalAxisToggleButton.enabled = false; // the disabled skin looks like crap!
+					verticalAxisToggleButton.visible = false;
+					verticalAxisToggleButtonGridItem.width = 0;
 					verticalAxisToggleButton.selectedIndex = -1;
-					verticalAxisToggleButton.alpha = 0.3;
+					break;
+				case "time":
+					traitVis.axisLayout.yScale.scaleType = ScaleType.TIME;
+					verticalAxisToggleButton.enabled = false;
+					verticalAxisToggleButton.visible = false;
+					verticalAxisToggleButtonGridItem.width = 0;
+					verticalAxisToggleButton.selectedIndex = -1;
 					break;
 				case "linear":
 				case "unsigned-linear":
-					traitVis.axisLayout.yScaleType = ScaleType.LINEAR;
+					traitVis.axisLayout.yScale.scaleType = ScaleType.LINEAR;
+					traitVis.axisLayout.yScale.labelFormat = "0.##";
 					verticalAxisToggleButton.selectedIndex = 0;
-//					verticalAxisToggleButton.enabled = true;
-					verticalAxisToggleButton.alpha = 1;
+					verticalAxisToggleButton.enabled = true;
+					verticalAxisToggleButton.visible = true;
+					verticalAxisToggleButtonGridItem.percentWidth = 0;
 					break;
 				case "log":
 				case "unsigned-log":
-					traitVis.axisLayout.yScaleType = ScaleType.LOG;
+					traitVis.axisLayout.yScale.scaleType = ScaleType.LOG;
+					traitVis.axisLayout.yScale.labelFormat = "0.##";
 					verticalAxisToggleButton.selectedIndex = 1;
-//					verticalAxisToggleButton.enabled = true;
-					verticalAxisToggleButton.alpha = 1;
-					break;
-				case "time":
-					traitVis.axisLayout.yScaleType = ScaleType.TIME;
-//					verticalAxisToggleButton.enabled = false;
-					verticalAxisToggleButton.selectedIndex = -1;
-					verticalAxisToggleButton.alpha = 0.3;
+					verticalAxisToggleButton.enabled = true;
+					verticalAxisToggleButton.visible = true;
+					verticalAxisToggleButtonGridItem.percentWidth = 0;
 					break;
 				}
 			}
 			
-			private function onVerticalHBoxInitialize(event:Event):void
+			private function onVerticalGridUpdate(event:Event):void
 			{
-				//FIXME: this is a dirty hack!
-				var r:Rotate = new Rotate();
-				r.angleFrom = 0;
-				r.angleTo = -90;
-				r.target = event.currentTarget;
-				r.play();
-				r.end();
-			}
-			
-			private function onVerticalHBoxUpdate(event:Event):void
-			{
-				//FIXME: this is a dirty hack!
-				verticalOptionsBar.width = verticalOptionsBarContainer.height;
-				verticalOptionsBar.setStyle("paddingTop", verticalOptionsBarContainer.width + 24);
+				verticalOptionsBarContainer.width = verticalOptionsBar.height;
+				// messy, but compensates for inability to specify the correct rotation
+				// origin a priori (because the size of everything before layout is zero)
+				verticalOptionsBar.setStyle("paddingBottom", -1 * verticalOptionsBar.width);
 			}
 			
 			private function onAxesChange(event:Event):void
@@ -252,9 +256,9 @@
 				
 				//TODO: decide if we should respect linear/log preferences for size ScaleType
 				if (currentField["defaultScale"] == "categories")
-					se.scaleType = ScaleType.CATEGORIES;
+					se.scale.scaleType = ScaleType.CATEGORIES;
 				else
-					se.scaleType = ScaleType.LINEAR;
+					se.scale.scaleType = ScaleType.LINEAR;
 
 				if (!isNaN(currentField["defaultMaxSize"]) && !isNaN(currentField["defaultMinSize"]))
 				{
@@ -279,9 +283,9 @@
 
 				//TODO: decide if we should respect linear/log preferences for color ScaleType
 				if (currentField["defaultScale"] == "categories")
-					ce.scaleType = ScaleType.CATEGORIES;
+					ce.scale.scaleType = ScaleType.CATEGORIES;
 				else
-					ce.scaleType = ScaleType.LINEAR;
+					ce.scale.scaleType = ScaleType.LINEAR;
 
 				traitVis.colorEncoder = ce;
 				traitVis.visualization.update(new Transitioner(0.4)).play();
@@ -294,7 +298,7 @@
 				var al:AxisLayout = traitVis.axisLayout;
 				
 				// first, check the current axis layout and don't do anything if it's not cool
-				if (al.yScaleType != ScaleType.LINEAR && al.yScaleType != ScaleType.LOG)
+				if (al.yScale.scaleType != ScaleType.LINEAR && al.yScale.scaleType != ScaleType.LOG)
 				{
 					verticalAxisToggleButton.selectedIndex = -1;
 					return;
@@ -314,7 +318,7 @@
 				}
 				
 				// now, update our current settings
-				al.yScaleType = event.index == 0 ? ScaleType.LINEAR : ScaleType.LOG;
+				al.yScale.scaleType = event.index == 0 ? ScaleType.LINEAR : ScaleType.LOG;
 				traitVis.visualization.update(new Transitioner(0.4)).play();
 			}
 			
@@ -324,7 +328,7 @@
 				var al:AxisLayout = traitVis.axisLayout;
 				
 				// don't do anything if it's not cool
-				if (al.xScaleType != ScaleType.LINEAR && al.xScaleType != ScaleType.LOG)
+				if (al.xScale.scaleType != ScaleType.LINEAR && al.xScale.scaleType != ScaleType.LOG)
 				{
 					horizontalAxisToggleButton.selectedIndex = -1;
 					return;
@@ -344,7 +348,7 @@
 				}
 				
 				// now, update
-				al.xScaleType = event.index == 0 ? ScaleType.LINEAR : ScaleType.LOG;
+				al.xScale.scaleType = event.index == 0 ? ScaleType.LINEAR : ScaleType.LOG;
 				traitVis.visualization.update(new Transitioner(0.4)).play();
 			}
 			
@@ -397,6 +401,9 @@
 			{
 				// calculate the data to put into our legend
 				var cp:ColorPalette = traitVis.colorEncoder.palette as ColorPalette;
+				if (!cp)
+					return;
+				
 				var legend:Array = new Array();
 				// a very important thing: traitVis.colorEncoder.scale.max;
 				
@@ -405,7 +412,7 @@
 				var c:uint, a:uint, af:Number, d:String;
 				
 				// we want to enumerate explicitly in this case
-				if (traitVis.colorEncoder.scaleType == ScaleType.CATEGORIES)
+				if (traitVis.colorEncoder.scale.scaleType == ScaleType.CATEGORIES)
 				{
 					var v:Array = traitVis.colorEncoder.scale.values();
 					for (var j:uint = 0; j < v.length; j++)
@@ -466,16 +473,24 @@
 			}
 		]]>
 	</mx:Script>
+	
 	<mx:HTTPService id="dataService" url="http://snp-dev.med.harvard.edu/test-data.xml" resultFormat="e4x" result="onHTTPServiceResult(event);"/>
 	<!-- mx:HTTPService id="dataService" url="{this.parameters.data}" resultFormat="e4x" result="onHTTPServiceResult(event);"/ -->
+	
 	<mx:HBox width="100%" height="100%" horizontalGap="0">
 		<mx:Grid id="mainGrid" width="100%" height="100%" horizontalGap="0" verticalGap="0" paddingLeft="12" paddingBottom="12" paddingRight="12">
 			<mx:GridRow width="100%" height="100%">
-				<mx:GridItem id="verticalOptionsBar" height="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#ffffff">
-					<mx:HBox id="verticalOptionsBarContainer" horizontalAlign="center" verticalAlign="middle" initialize="onVerticalHBoxInitialize(event);" updateComplete="onVerticalHBoxUpdate(event);">
-						<trait:RightAlignedComboBox id="verticalAxisComboBox" dataProvider="{_fieldSet}" change="onAxesChange(event);"/>
-						<mx:ToggleButtonBar id="verticalAxisToggleButton" itemClick="onVerticalAxisToggleButtonClick(event);" dataProvider="[Lin, Log]"/>
-					</mx:HBox>
+				<mx:GridItem id="verticalOptionsBar" height="100%" width="24" horizontalAlign="center" verticalAlign="bottom" backgroundColor="#ffffff" updateComplete="onVerticalGridUpdate(event);">
+					<mx:Grid id="verticalOptionsBarContainer" rotation="-90" width="100%" horizontalGap="0" paddingLeft="48" paddingRight="48">
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" height="100%">
+								<trait:RightAlignedComboBox id="verticalAxisComboBox" dataProvider="{_fieldSet}" change="onAxesChange(event);" width="100%" />
+							</mx:GridItem>
+							<mx:GridItem id="verticalAxisToggleButtonGridItem" height="100%" paddingLeft="12">
+								<mx:ToggleButtonBar id="verticalAxisToggleButton" itemClick="onVerticalAxisToggleButtonClick(event);" dataProvider="[Lin, Log]"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
 				</mx:GridItem>
 				<mx:GridItem width="100%" height="100%">
 					<trait:TraitVis id="traitVis" width="100%" height="100%"/>
@@ -484,7 +499,7 @@
 					<mx:VBox id="sideOptionsBarContainer">
 						<mx:Panel layout="vertical" title="Size" width="144" horizontalAlign="center" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 							<mx:Spacer height="12" width="12"/>
-							<mx:ComboBox id="sizeComboBox" maxWidth="120" dataProvider="{_fieldSet}" change="onSizeChange(event);"/>
+							<mx:ComboBox id="sizeComboBox" maxWidth="120" dataProvider="{_fieldSet}" change="onSizeChange(event);" width="100%"/>
 							<mx:Spacer height="12" width="12"/>
 							<!-- TODO: fix the hack so that the slider thumb width isn't hardcoded -->
 							<trait:CustomVSlider id="sizeSlider" width="100%" height="90" minimum="0" maximum="{sizeSlider.height - 12}" initialize="onSizeSliderInitialize(event);" change="onSizeSliderChange(event);"/>
@@ -492,7 +507,7 @@
 						</mx:Panel>
 						<mx:Panel layout="vertical" title="Color" width="144" horizontalAlign="center" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 							<mx:Spacer height="12" width="12"/>
-							<mx:ComboBox id="colorComboBox" maxWidth="120" dataProvider="{_fieldSet}" change="onColorChange(event);"/>
+							<mx:ComboBox id="colorComboBox" maxWidth="120" dataProvider="{_fieldSet}" change="onColorChange(event);" width="100%"/>
 							<mx:Spacer height="12" width="12"/>
 							<mx:List id="colorList" width="100%" height="102" borderStyle="none" rowHeight="22" paddingTop="0" paddingLeft="6" paddingBottom="0" paddingRight="6" selectable="false" horizontalScrollPolicy="off" initialize="onColorListInitialize(event);">
 								<mx:itemRenderer>
@@ -506,15 +521,22 @@
 								</mx:itemRenderer>
 							</mx:List>
 						</mx:Panel>
-						<!-- mx:Button label="Zoom!" click="onZoom();"/ -->
 					</mx:VBox>
 				</mx:GridItem>
 			</mx:GridRow>
 			<mx:GridRow width="100%">
 				<mx:GridItem/>
-				<mx:GridItem id="horizontalOptionsBar" width="100%" horizontalAlign="center" verticalAlign="middle" backgroundColor="#ffffff">
-					<mx:ComboBox id="horizontalAxisComboBox" dataProvider="{_fieldSet}" change="onAxesChange(event);"/>
-			    	<mx:ToggleButtonBar id="horizontalAxisToggleButton" itemClick="onHorizontalAxisToggleButtonClick(event);" dataProvider="[Lin, Log]"/>
+				<mx:GridItem id="horizontalOptionsBar" height="24" width="100%" verticalAlign="middle" backgroundColor="#ffffff">
+					<mx:Grid id="horizontalOptionsBarContainer" width="100%" horizontalGap="0" paddingLeft="48" paddingRight="48">
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" height="100%">
+								<mx:ComboBox id="horizontalAxisComboBox" dataProvider="{_fieldSet}" change="onAxesChange(event);" width="100%"/>
+							</mx:GridItem>
+							<mx:GridItem id="horizontalAxisToggleButtonGridItem" height="100%" paddingLeft="12">
+						    	<mx:ToggleButtonBar id="horizontalAxisToggleButton" itemClick="onHorizontalAxisToggleButtonClick(event);" dataProvider="[Lin, Log]"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
 				</mx:GridItem>
 				<mx:GridItem/>
 			</mx:GridRow>

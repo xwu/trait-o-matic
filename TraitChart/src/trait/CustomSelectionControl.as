@@ -1,5 +1,7 @@
 package trait
 {
+	import flare.vis.events.SelectionEvent;
+	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
@@ -9,9 +11,11 @@ package trait
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	
-	import flare.vis.controls.Control;
-	
+	[Event(name="select", type="flare.vis.events.SelectionEvent")]
+	[Event(name="deselect", type="flare.vis.events.SelectionEvent")]
+		
 	public class CustomSelectionControl extends Control
 	{
 		private var _r:Rectangle = new Rectangle();
@@ -19,16 +23,13 @@ package trait
 		private var _shape:Shape = new Shape();
 		private var _hit:InteractiveObject;
 		private var _stage:Stage;
+		private var _sel:Dictionary = new Dictionary;
 		
-		/** Boolean-valued filter function determining which items are eligible
-		 *  for selection. */
-		public var filter:Function = null;
-		
-		/** Function invoked when an item is added to the selection. */
-		public var onSelect:Function;
-		/** Function invokde when an item is removed from the selection. */
-		public var onDeselect:Function;
-		
+		private var _add0:DisplayObject = null;
+		private var _rem0:DisplayObject = null;
+		private var _add:Array = null;
+		private var _rem:Array = null;
+				
 		/** The active hit area over which pan/zoom interactions can be performed. */
 		public function get hitArea():InteractiveObject { return _hit; }
 		public function set hitArea(hitArea:InteractiveObject):void {

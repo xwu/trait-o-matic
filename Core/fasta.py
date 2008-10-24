@@ -15,7 +15,7 @@ class FastaRecord(object):
 	def __str__(self):
 		return ">" + self.title + "\n" + textwrap.fill(self.sequence, 50)
 
-def _fasta_iterator(f):	
+def _fasta_iterator(f):
 	# get started with the first title
 	title = f.readline()	
 	if not title.startswith(">"):
@@ -40,7 +40,7 @@ def _fasta_iterator(f):
 	# we're at the end of the file; yield the last record
 	yield FastaRecord(title, "".join(sequence))
 
-class FastaFile:
+class FastaFile(object):
 	def __init__(self, src):
 		# try to open the file, in case we're given a path
 		try:

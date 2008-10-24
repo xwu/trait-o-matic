@@ -5,9 +5,7 @@
 # ---
 # This code is part of the Trait-o-matic project and is governed by its license.
 
-import itertools, operator
 from warnings import warn
-
 from bitset import *
 
 class Interval(object):
@@ -20,6 +18,17 @@ class Interval(object):
 	
 	def __str__(self):
 		return self.raw
+	
+	@property
+	def sort_key(self):
+		"""Returns a key useful for meaningful sorting, required for batched sorts."""
+		return (self.chrom, self.start, self.end, self.strand)
+	
+	def __cmp__(self, other):
+		try:
+			return cmp(self.sort_key, other.sort_key)
+		except AttributeError:
+			return cmp(str(self), str(other))
 
 def _interval_iterator(f):
 	"""
@@ -102,7 +111,7 @@ def _operate_basewise(operator, *operands):
 	
 	return bitsets
 
-class IntervalFile:
+class IntervalFile(object):
 	def __init__(self, src, length_src=[]):
 		# try to open the file, in case we're given a path
 		try:
@@ -255,23 +264,26 @@ class IntervalFile:
 		if len(others) == 0:
 			raise TypeError("intersect_basewise() requires at least one other file")
 		return _operate_basewise("intersect", self, *others)
-	
-	def sort(self, key=None):
+
+	def sort(self, key=None, buffer_size=16384):
 		"""
-		Sort an interval file, optionally by the key provided; this function uses the
-		deep iterator, so lines are parsed into the file format-appropriate structure
-		and can be sorted based on any of its attributes.
+		Sort an interval file, optionally by the key provided; this function parses
+		records completely using the built-in iterator for the class, so lines can be
+		sorted based on any of its attributes.
 		"""
-		# evaluate the expression, if we can, in case it's a string or code object
-		try:
-			key = eval(key, {})
-		except TypeError:
-			pass	
-		records = [r for r in iter(self)]
-		records.sort(key=key)
-		for r in records:
-			yield str(r)
-	
+		if key is None:
+			key = lambda obj : obj.sort_key
+		else:
+			# evaluate the expression if we can, in case it's a string or code object
+			try:
+				key = eval(key, {})
+			except TypeError:
+				pass
+		records = [(key(r), str(r)) for r in iter(self)]
+		records.sort()
+		for k, v in records:
+			yield v
+
 	def subtract(self, *others, **options):
 		"""
 		Find regions in the file that do not intersect any region in any other interval file.
@@ -294,7 +306,7 @@ class IntervalFile:
 			if chrom in bitsets and bitsets[chrom].count_range(start, end - start) > max_overlap:
 				continue
 			yield str(interval)
-		
+
 	def subtract_basewise(self, *others):
 		"""
 		Find regions in the file that do not intersect any region in any other interval file,

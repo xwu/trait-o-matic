@@ -2,7 +2,11 @@
 # Filename: config.py
 
 UPLOAD_DIR = None
-SEQ_EXTRACT_CMD = "twoBitToFa /genomes/human_genomic_ref.2bit -seqList='%(in)s' '%(out)s'"
+
+# MIN_PARASOL_FILE_SIZE = None
+# BLAT_CMD = None
+# GFCLIENT_CMD = None
+# SEQ_EXTRACT_CMD = "twoBitToFa /genomes/human_genomic_ref.2bit -seqList='%(in)s' '%(out)s'"
 
 DB_HOST = "localhost"
 
@@ -13,6 +17,14 @@ DB_READ_DATABASE = "caliban"
 DB_WRITE_USER = "writer"
 DB_WRITE_PASSWD = "shakespeare"
 DB_WRITE_DATABASE = "ariel"
+
+DBSNP_USER = "reader"
+DBSNP_PASSWD = "shakespeare"
+DBSNP_DATABASE = "dbsnp"
+
+HGMD_USER = "reader"
+HGMD_PASSWD = "shakespeare"
+HGMD_DATABASE = "hgmd_pro"
 
 CHROMOSOME_NAMES = {
 	"1": "gi|89161185|ref|NC_000001.9|NC_000001",
@@ -42,3 +54,5 @@ CHROMOSOME_NAMES = {
 	"M": "gi|17981852|ref|NC_001807.4|NC_001807",
 	"MT": "gi|17981852|ref|NC_001807.4|NC_001807"
 } # either M or MT OK
+
+# CUTOFF_SCORE = None

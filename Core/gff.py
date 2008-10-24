@@ -8,7 +8,7 @@
 from warnings import warn
 from intervals import Interval, IntervalFile
 
-class GFFRecord(object):
+class GFFRecord(Interval):
 	def __init__(self, seqname, source, feature, start, end,
 	             score, strand, frame, attributes=None, comments=None):
 		self.seqname = seqname
@@ -38,14 +38,10 @@ class GFFRecord(object):
 			self.strand, self.frame, attributes_string, comments_string)
 		return s.rstrip("\t")
 	
-	def __cmp__(self, other):
-		a = cmp(self.seqname, other.seqname)
-		if a != 0: return a
-		b = cmp(self.start, other.start)
-		if b != 0: return b
-		c = cmp(self.end, other.end)
-		if c != 0: return c
-		return cmp(self.feature, other.feature)
+	@property
+	def sort_key(self):
+		"""Returns a key useful for meaningful sorting, required for batched sorts."""
+		return (self.seqname, self.start, self.end, self.strand, self.feature)
 
 def _gff_iterator(f):
 	"""
@@ -118,7 +114,7 @@ def _gff_iterator(f):
 
 def _gff_interval_iterator(f):
 	"""
-	Shallow parser that returns information in a tuple of (chrom, start, end, strand, line).
+	Shallow parser that returns information in Interval records.
 	Line is stripped of whitespace and (start, end) is zero-based, half-open for more
 	standardized processing in Python. Ignores empty lines and presumes strand is + unless
 	explicitly set to -.

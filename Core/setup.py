@@ -12,6 +12,7 @@ from Pyrex.Distutils import build_ext
 extensions = []
 extensions.append(Extension("_twobit", ["_twobit.pyx"]))
 extensions.append(Extension("bitset", ["bitset.pyx", "binBits.c", "bits.c", "common.c"]))
+extensions.append(Extension("simplejson._speedups", ["simplejson/_speedups.c"]))
 
 def main():
 	setup(name="trait",

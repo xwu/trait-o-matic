@@ -295,7 +295,7 @@ def _omim_iterator(f):
 		}
 		parse.get(field, _omim_miscellaneous_field)(f, record_dictionary)
 
-class OMIMFile:
+class OMIMFile(object):
 	def __init__(self, src):
 		# try to open the file, in case we're given a path
 		try:

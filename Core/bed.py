@@ -8,7 +8,7 @@
 from warnings import warn
 from intervals import Interval, IntervalFile
 
-class BEDRecord(object):
+class BEDRecord(Interval):
 	def __init__(self, chrom, chromStart, chromEnd, name=None, score=None,
 	             strand=None, thickStart=None, thickEnd=None, itemRgb=None,
 	             blockCount=None, blockSizes=None, blockStarts=None):
@@ -53,19 +53,10 @@ class BEDRecord(object):
 			blockSizes_string, blockStarts_string)
 		return s.rstrip("\t")
 	
-	def __cmp__(self, other):
-		a = cmp(self.chrom, other.chrom)
-		if a != 0: return a
-		b = cmp(self.chromStart, other.chromStart)
-		if b != 0: return b
-		c = cmp(self.chromEnd, other.chromEnd)
-		if c != 0: return c
-		self_name_string = other_name_string = ""
-		if self.name is not None:
-			self_name_string = self.name
-		if other.name is not None:
-			other_name_string = other.name
-		return cmp(self_name_string, other_name_string)
+	@property
+	def sort_key(self):
+		"""Returns a key useful for meaningful sorting, required for batched sorts."""
+		return (self.chrom, self.chromStart, self.chromEnd, self.strand, self.name)
 
 def _bed_iterator(f):
 	# start reading line by line
@@ -141,7 +132,7 @@ def _bed_iterator(f):
 
 def _bed_interval_iterator(f):
 	"""
-	Shallow parser that returns information in a tuple of (chrom, start, end, strand, line).
+	Shallow parser that returns information in Interval records.
 	Line is stripped of whitespace and (start, end) is zero-based, half-open. Ignores empty
 	lines and presumes strand is + unless explicitly set to -.
 	"""

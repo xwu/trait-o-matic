@@ -164,7 +164,7 @@ def main():
 				print ("%s %s : %s %s" % (a, b, c, d)).ljust(col_width),
 			else:
 				try:
-					p = "%.1f%%" % float(matching_count) / (matching_count + unmatching_count) * 100
+					p = "%.1f%%" % (float(matching_count) / (matching_count + unmatching_count) * 100)
 				except ZeroDivisionError:
 					p = "--"
 				if option.verbose:

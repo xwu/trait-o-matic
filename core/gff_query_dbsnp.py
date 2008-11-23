@@ -5,13 +5,13 @@
 usage: %prog gff_file
 """
 
-# Append db_xref attribute with dbSNP information, if available
+# Append db_xref (or, for GFF3, Dbxref) attribute with dbSNP information, if available
 # ---
 # This code is part of the Trait-o-matic project and is governed by its license.
 
 import os, sys
 import MySQLdb
-import gff
+from utils import gff
 from config import DB_HOST, DBSNP_USER, DBSNP_PASSWD, DBSNP_DATABASE
 
 dbsnp_query = '''
@@ -52,7 +52,10 @@ def main():
 		
 		# set the attribute if we can
 		if data is not None:
-			record.attributes["db_xref"] = "dbsnp:rs%s" % data[0]
+			if record.version >= 3:
+				record.attributes["Dbxref"] = "dbsnp:rs%s" % data[0]
+			else:
+				record.attributes["db_xref"] = "dbsnp:rs%s" % data[0]
 		
 		# output regardless
 		print record

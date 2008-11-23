@@ -10,8 +10,8 @@ from distutils.extension import Extension
 from Pyrex.Distutils import build_ext
 
 extensions = []
-extensions.append(Extension("_twobit", ["_twobit.pyx"]))
-extensions.append(Extension("bitset", ["bitset.pyx", "binBits.c", "bits.c", "common.c"]))
+extensions.append(Extension("utils._twobit", ["utils/_twobit.pyx"]))
+extensions.append(Extension("utils.bitset", ["utils/bitset.pyx", "utils/binBits.c", "utils/bits.c", "utils/common.c"]))
 extensions.append(Extension("simplejson._speedups", ["simplejson/_speedups.c"]))
 
 def main():

@@ -33,11 +33,11 @@ def main():
 	for line in fileinput.input():
 		l = line.strip().split('\t')
 		
-		if len(l) < 12:
+		if len(l) < 9:
 			break
 		
 		out_line = l[0]
-		out_line += "\tmaq\tsnp\t"
+		out_line += "\tmaq\tSNP\t"
 		out_line += l[1] + "\t" + l[1]
 		out_line += "\t.\t+\t.\t"
 		

@@ -7,8 +7,9 @@
 # ---
 # This code is part of the Trait-o-matic project and is governed by its license.
 
-import sys
-import gff
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils import gff
 
 def main():
 	f = gff.input(sys.argv[1])

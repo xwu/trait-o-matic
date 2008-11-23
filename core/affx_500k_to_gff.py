@@ -10,8 +10,8 @@ usage: %prog affx_500k_file_1 affx_500k_file_2 ...
 # This code is part of the Trait-o-matic project and is governed by its license.
 
 import fileinput, os, sys, MySQLdb
+from utils.biopython_utils import reverse_complement
 from config import DB_HOST, DB_READ_USER, DB_READ_PASSWD, DB_READ_DATABASE
-from biopython_utils import reverse_complement
 
 probe_set_id_select_query = '''
 SELECT dbsnp_rs_id, chr, pos, strand, allele_a, allele_b FROM affx_mapping250k_nsp

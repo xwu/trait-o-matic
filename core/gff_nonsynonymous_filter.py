@@ -12,9 +12,9 @@ usage: %prog gff_file twobit_file
 
 import math, os, sys
 import MySQLdb
-import gff, twobit
-from biopython_utils import reverse_complement, translate
-from codon_intersect import codon_intersect
+from utils import gff, twobit
+from utils.biopython_utils import reverse_complement, translate
+from utils.codon_intersect import codon_intersect
 from config import DB_HOST, DB_READ_USER, DB_READ_PASSWD, DB_READ_DATABASE
 
 query = '''

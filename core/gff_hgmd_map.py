@@ -12,7 +12,7 @@ usage: %prog gff_file
 import os, string, sys
 import MySQLdb
 import simplejson as json
-import gff
+from utils import gff
 from config import DB_HOST, HGMD_USER, HGMD_PASSWD, HGMD_DATABASE
 
 query = '''

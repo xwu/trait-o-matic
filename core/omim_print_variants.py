@@ -10,7 +10,7 @@ usage: %prog omim.txt
 # This code is part of the Trait-o-matic project and is governed by its license.
 
 import sys, math, re
-import omim
+from utils import omim
 
 one_letter_alphabet = {
 	"Ala": "A",

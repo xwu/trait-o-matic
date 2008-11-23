@@ -27,7 +27,7 @@ def main():
 			continue
 		
 		out_line = "chr" + l[0]
-		out_line += "\tCV\tsnp\t"
+		out_line += "\tCV\tSNP\t"
 		out_line += str(int(l[3]) + 1) + "\t" + l[4]
 		out_line += "\t.\t+\t.\t"
 		
@@ -43,10 +43,10 @@ def main():
 			out_line += "alleles " + alleles[1]
 		
 		out_line += ";ref_allele " + ref
-		out_line += ";rmr " + attributes[1][-1]
-		out_line += ";tr " + attributes[2][-1]
+		out_line += ";RMR " + attributes[1][-1]
+		out_line += ";TR " + attributes[2][-1]
 		out_line += ";method " + l[8]
-		out_line += ";id " + l[1]
+		out_line += ";ID " + l[1]
 		
 		print out_line
 

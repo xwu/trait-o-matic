@@ -10,7 +10,7 @@ usage: %prog watson_gff
 # This code is part of the Trait-o-matic project and is governed by its license.
 
 import fileinput, os, sys
-import gff
+from utils import gff
 
 def main():
 	# return if we don't have the correct arguments
@@ -21,7 +21,7 @@ def main():
 	
 	for record in watson_gff:
 		# standardize feature name
-		record.feature = "snp"
+		record.feature = "SNP"
 		
 		# double check alleles and allele counts
 		alleles = record.attributes["alleles"]

@@ -13,7 +13,7 @@ usage: %prog gff_files_1 gff_files_2 [options]
 
 import glob, math, os, sys
 from tempfile import TemporaryFile
-import doc_optparse, gff
+from utils import doc_optparse, gff
 
 # for output purposes, column headings will be alphanumeric
 def excel_column(n):

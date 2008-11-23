@@ -7,8 +7,9 @@
 # ---
 # This code is part of the Trait-o-matic project and is governed by its license.
 
-import sys
-import omim
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils import omim
 
 def main():
 	f = omim.input(sys.argv[1])

@@ -10,7 +10,7 @@ usage: %prog gff_file_1 gff_file_2
 # This code is part of the Trait-o-matic project and is governed by its license.
 
 import sys
-import gff
+from utils import gff
 
 def main():
 	# return if we don't have the correct arguments

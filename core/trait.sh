@@ -11,7 +11,7 @@ start() {
 		echo "Trait-o-matic server already running"
 	else
 		echo "Starting Trait-o-matic server..."
-		python $SERVER &
+		python $SERVER &> /dev/null &
 		echo $! > $SERVER_PID
 	fi
 }

@@ -3,6 +3,7 @@
 
 """
 usage: %prog gff_files_1 gff_files_2 [options]
+  -e, --enumerate: output each concordant and discordant SNP (twice)
   -r, --read-depth: output mean and median read depth information
   -v, --verbose: output additional information
 """
@@ -60,19 +61,20 @@ def main():
 	temp_file_1 = TemporaryFile()
 	temp_file_2 = TemporaryFile()
 	
-	# use a wider column if we're going to need it
-	if option.read_depth:
-		col_width = 24
-	elif option.verbose:
-		col_width = 16
-	else:
-		col_width = 8
-	
-	# print column headings
-	print " " * 8,
-	for i in range(1, len(gff_files_1) + 1):
-		print excel_column(i).ljust(col_width),
-	print ""
+	if not option.enumerate:
+		# use a wider column if we're going to need it
+		if option.read_depth:
+			col_width = 24
+		elif option.verbose:
+			col_width = 16
+		else:
+			col_width = 8
+		
+		# print column headings
+		print " " * 8,
+		for i in range(1, len(gff_files_1) + 1):
+			print excel_column(i).ljust(col_width),
+		print ""
 	
 	# initialize counter to print row headings
 	file_number = 0
@@ -81,8 +83,9 @@ def main():
 	for g2_path in gff_files_2:
 		
 		# print row heading
-		file_number += 1
-		print str(file_number).ljust(8),
+		if not option.enumerate:
+			file_number += 1
+			print str(file_number).ljust(8),
 		
 		# now iterate through the first list, do intersections and compare
 		for g1_path in gff_files_1:
@@ -137,10 +140,20 @@ def main():
 					if sorted(record2.attributes["alleles"].strip("\"").split("/")) != \
 					  sorted(record1.attributes["alleles"].strip("\"").split("/")):
 						unmatching_count += 1
+						if option.enumerate:
+							record1.attributes["concordant"] = "false"
+							record2.attributes["concordant"] = "false"
+							print record1
+							print record2
 						if option.read_depth:
 							unmatching_read_depths.extend(rd)
 					else:
 						matching_count += 1
+						if option.enumerate:
+							record1.attributes["concordant"] = "true"
+							record2.attributes["concordant"] = "true"
+							print record1
+							print record2
 						if option.read_depth:
 							matching_read_depths.extend(rd)
 				# no alleles? not a SNP
@@ -148,7 +161,9 @@ def main():
 					continue
 			
 			# now we print the result, being mindful of possible zero division problems, etc.
-			if option.read_depth:
+			if option.enumerate:
+				pass
+			elif option.read_depth:
 				try:
 					a = "%.1f" % mean(matching_read_depths)
 					b = "%.1f" % median(matching_read_depths)
@@ -183,17 +198,18 @@ def main():
 		print ""
 	
 	# print the legend describing what the column and row headings mean
-	print "-" * 8
-	file_number = 0
-	for i in gff_files_1:
-		file_number += 1
-		print ("[%s]" % excel_column(file_number)).ljust(8),
-		print i
-	file_number = 0
-	for i in gff_files_2:
-		file_number += 1
-		print ("[%s]" % file_number).ljust(8),
-		print i
+	if not option.enumerate:
+		print "-" * 8
+		file_number = 0
+		for i in gff_files_1:
+			file_number += 1
+			print ("[%s]" % excel_column(file_number)).ljust(8),
+			print i
+		file_number = 0
+		for i in gff_files_2:
+			file_number += 1
+			print ("[%s]" % file_number).ljust(8),
+			print i
 
 if __name__ == "__main__":
 	main()

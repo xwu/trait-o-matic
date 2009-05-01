@@ -42,16 +42,21 @@ def main():
 	
 	gff_file = gff.input(sys.argv[1])	
 	for record in gff_file:
+		# lightly parse alleles
+		alleles = record.attributes["alleles"].strip("\"").split("/")
+		ref_allele = record.attributes["ref_allele"].strip("\"")
+		
 		# examine each amino acid change (this takes care of alternative splicings)
 		amino_acid_changes = record.attributes["amino_acid"].strip("\"").split("/")
 		
 		# make sure not to duplicate what we print because of multiple alternative
-		# splicings; so, initialize an empty list to hold previous output strings
-		# so we can compare before printing
-		previous_output_strings = []
+		# splicings; so, initialize an empty list to hold previous tuples of gene
+		# names, variant records, and phenotype strings, so that we can compare
+		previous_gene_variant_phenotype = []
 		
 		# examine each alternative splicing
 		for a in amino_acid_changes:
+			gene_variant_phenotype = []
 			output_strings = []
 			
 			amino_acid = a.split(" ")
@@ -82,11 +87,25 @@ def main():
 					continue
 				
 				for d in data:
-					disorder = d[0]
+					disorder = d[0].strip()
 					omim = d[1]
+					gene_variant_phenotype.append((gene, str(record), disorder))
+					
+					# format for output
+					if record.start == record.end:
+						coordinates = str(record.start)
+					else:
+						coordinates = str(record.start) + "-" + str(record.end)
+					
+					genotype = "/".join(alleles)
 					
 					output = {
+						"chromosome": record.seqname,
+						"coordinates": coordinates,
 						"gene": gene,
+						"amino_acid_change": aa,
+						"genotype": genotype,
+						"ref_allele": ref_allele,
 						"variant": str(record),
 						"phenotype": disorder,
 						"reference": "omim:" + str(omim),
@@ -95,8 +114,8 @@ def main():
 					output_strings.append(json.dumps(output))
 			
 			# actually only output what's not duplicating previous 
-			if output_strings != previous_output_strings:
-				previous_output_strings = output_strings
+			if gene_variant_phenotype != previous_gene_variant_phenotype:
+				previous_gene_variant_phenotype = gene_variant_phenotype
 				for o in output_strings:
 					print o
 

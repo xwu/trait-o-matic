@@ -10,6 +10,7 @@ usage: %prog gff_file
 # This code is part of the Trait-o-matic project and is governed by its license.
 
 import os, string, sys
+from copy import copy
 import MySQLdb
 import simplejson as json
 from utils import gff
@@ -64,6 +65,7 @@ def main():
 	for record in gff_file:
 		# lightly parse alleles
 		alleles = record.attributes["alleles"].strip("\"").split("/")
+		ref_allele = record.attributes["ref_allele"].strip("\"")
 		
 		# determine zygosity
 		if len(alleles) == 1:
@@ -102,23 +104,56 @@ def main():
 					else:
 						allelic_variant_id = "omim:" + d[3]
 					
+					# keep, for internal purposes, a list of alleles minus the reference
+					leftover_alleles = copy(alleles)
+					try:
+						leftover_alleles.remove(ref_allele)
+					except ValueError:
+						pass
+					
 					# we see if what we designated the mutant allele is the phenotype-
 					# associated allele, or if what we the reference sequence allele is
 					# the phenotype-associated allele; if the latter, we have to make
 					# sure that the genome we're looking at actually has the reference
 					# allele
-					if string.lower(amino_acid_change).endswith(string.lower(mut_aa)) or \
-					  (string.lower(amino_acid_change).endswith(string.lower(ref_aa)) and
-					    record.attributes["ref_allele"] in alleles):
-						output = {
-							"gene": gene,
-							"variant": str(record),
-							"amino_acid_change": amino_acid_change,
-							"zygosity": zygosity,
-							"phenotype": phenotype,
-							"reference": allelic_variant_id,
-						}
-						print json.dumps(output)
+					if string.lower(amino_acid_change).endswith(string.lower(mut_aa)):
+						amino_acid_change_and_position = aa[0] + str(aa_pos) + aa[-1]
+						#TODO: this doesn't work when we have multiple alleles
+						if len(leftover_alleles) == 1:
+							trait_allele = leftover_alleles[0]
+						else:
+							trait_allele = '?'
+					elif (string.lower(amino_acid_change).endswith(string.lower(ref_aa)) and
+					  ref_allele in alleles):
+					    amino_acid_change_and_position = aa[-1] + str(aa_pos) + aa[0]
+					    trait_allele = ref_allele
+					else:
+						continue
+					
+					# format for output
+					if record.start == record.end:
+						coordinates = str(record.start)
+					else:
+						coordinates = str(record.start) + "-" + str(record.end)
+					
+					genotype = "/".join(leftover_alleles)
+					if ref_allele in alleles:
+						genotype = ref_allele + "/" + genotype
+					
+					output = {
+						"chromosome": record.seqname,
+						"coordinates": coordinates,
+						"gene": gene,
+						"amino_acid_change": amino_acid_change_and_position,
+						"genotype": genotype,
+						"ref_allele": ref_allele,
+						"trait_allele": trait_allele,
+						"zygosity": zygosity,
+						"variant": str(record),
+						"phenotype": phenotype,
+						"reference": allelic_variant_id,
+					}
+					print json.dumps(output)
 	
 	# close database cursor and connection
 	cursor.close()

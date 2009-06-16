@@ -8,6 +8,10 @@ DB_READ_USER = "reader"
 DB_READ_PASSWD = "shakespeare"
 DB_READ_DATABASE = "caliban"
 
+DB_UPDATE_USER = "updater"
+DB_UPDATE_PASSWD = "shakespeare"
+DB_UPDATE_DATABASE = "caliban"
+
 DB_WRITE_USER = "writer"
 DB_WRITE_PASSWD = "shakespeare"
 DB_WRITE_DATABASE = "ariel"

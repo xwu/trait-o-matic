@@ -50,7 +50,10 @@ def main():
 			chr = l[0]
 		else:
 			chr = "chr" + l[0]
-		pos = int(l[1])
+		try:
+			pos = int(l[1])
+		except ValueError:
+			pos = None
 		rs = l[2]
 		genotype = l[3]
 		phenotype = l[4]

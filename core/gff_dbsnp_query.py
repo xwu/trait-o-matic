@@ -15,7 +15,7 @@ from utils import gff
 from config import DB_HOST, DBSNP_USER, DBSNP_PASSWD, DBSNP_DATABASE
 
 dbsnp_query = '''
-SELECT snp_id FROM b127_SNPChrPosOnRef_36_2 WHERE chr=%s AND pos=%s LIMIT 1;
+SELECT snp_id FROM SNPChrPosOnRef WHERE chr=%s AND pos=%s LIMIT 1;
 '''
 
 def main():

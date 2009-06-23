@@ -1,0 +1,20 @@
+/*
+stylesheet -- ie8 version
+(C) 2009 Xiaodi Wu
+*/
+
+input.checkbox {
+	margin-bottom: 2px;
+}
+
+input.radio {
+	margin-bottom: 1px;
+}
+
+/* --- */
+
+#body .two-column:after,
+#body .three-column:after,
+#body .four-column:after {
+	content: "*";
+}

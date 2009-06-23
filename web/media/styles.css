@@ -1,0 +1,507 @@
+/*
+stylesheet
+(C) 2007-2009 Xiaodi Wu
+*/
+
+html, body {
+	background: #fff;
+	color: #000;
+	font: 13px/20px Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	font: 20px/30px Georgia, "Times New Roman", Times, serif;
+	margin: 20px 0;
+}
+
+h2 {
+	font: 20px/30px Georgia, "Times New Roman", Times, serif;
+	margin: 20px 0;
+}
+
+h3 {
+	font: 16px/20px Arial, Helvetica, sans-serif;
+	margin: 20px 0 -10px;
+}
+
+p {
+	font: 13px/20px Arial, Helvetica, sans-serif;
+	margin: 20px 0;
+}
+
+address, blockquote {
+	font: 13px/20px Arial, Helvetica, sans-serif;
+	margin: 20px 36px;
+}
+
+ul, ol {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+li {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+ul li {
+	list-style: square;
+}
+
+a:link, a:active, a:visited {
+	color: #4e689e;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+a:hover {
+	color: #5d7cbb;
+}
+
+a img {
+	border: none;
+}
+
+code {
+	font: 14px monospace;
+}
+
+code a {
+	color: inherit;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+code a:hover {
+	color: #5d7cbb;
+	text-decoration: underline;
+}
+
+sup {
+	position: relative;
+	bottom: 0.4em;
+	font-size: smaller;
+	vertical-align: baseline;
+}
+
+sub {
+	position: relative;
+	bottom: -0.3em;
+	font-size: smaller;
+	vertical-align: baseline;
+}
+
+.clear {
+	clear: both;
+}
+
+/* --- */
+
+form {
+	margin: 20px 0;
+}
+
+input, select, textarea {
+	margin: 0;
+}
+
+input.file, input.text, input.password, select, textarea {
+	width: 240px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+
+input.wide.text, input.wide.password, select.wide, textarea.wide {
+	width: 300px;
+}
+
+input.checkbox {
+	vertical-align: middle;
+	margin-bottom: 4px;
+}
+
+input.radio {
+	vertical-align: middle;
+	margin-bottom: 3px;
+}
+
+input.placeholder {
+	color: #888;
+}
+
+input.search-field {
+	background: #fff url(magnifying-glass.gif) 3px center no-repeat;
+	font-size: 14px;
+	margin: 0;
+	padding: 2px 2px 2px 20px;
+	border: 1px solid #c7d1e7;
+}
+
+form .label {
+	color: #5d7cbb;
+	font-weight: bold;
+	text-transform: lowercase;
+}
+
+form .label select {
+	text-transform: none;
+}
+
+form .description {
+	font-weight: normal;
+}
+
+form .error {
+	color: #ff9900;
+	font-weight: normal;
+}
+
+form .or {
+	color: #5d7cbb;
+	font-style: italic;
+	padding: 12px;
+}
+
+form .submit input {
+	width: 6em;
+}
+
+form .submit input.wide {
+	width: 12em;
+}
+
+form div.wrapper {
+	margin: -5px -12px;
+}
+
+form div.wrapper p {
+	margin: 0 12px;
+	padding: 5px 0;
+}
+
+form p.submit {
+	text-align: right;
+	margin: 10px 0 20px;
+}
+
+form table.cells {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+form td {
+	vertical-align: top;
+	padding: 5px 12px;
+}
+
+form .tall {
+	vertical-align: top;
+}
+
+form div.submit {
+	text-align: right;
+	margin-top: 10px;
+}
+
+/* --- */
+
+#head {
+	min-width: 852px;
+	background: #5d7cbb url(head.gif) bottom left repeat-x;
+	color: #fff;
+	padding: 20px 24px;
+}
+
+#head > div {
+	position: relative;
+	width: 852px;
+	margin: 0 auto;
+}
+
+#head #menu {
+	text-align: right;
+	margin-left: 216px;
+	padding: 0 6px;
+}
+
+#head #menu p {
+	margin: 0;
+}
+
+#head #menu .description {
+	display: none;
+}
+
+#head #logotype {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	margin-top: -18px;
+}
+
+#head a, #head a:hover {
+	color: #fff;
+}
+
+#head .link {
+}
+
+#head .bullet {
+	color: #d6deee;
+}
+
+#body {
+	min-width: 852px;
+	color: #000;
+	padding: 0 24px;
+}
+
+#body > div {
+	position: relative;
+	width: 852px;
+	margin: 40px auto;
+}
+
+#body h2 {
+	color: #4e689e;
+}
+
+#body h2 > span {
+	background: url(h2.gif) center right no-repeat;
+	padding-right: 54px;
+}
+
+#body h2 a, #body h2 a:hover {
+	color: #4e689e;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+/* in Safari, reCAPTCHA inserts an iframe that breaks
+   the layout; the following should fix this and any
+   similar problems */
+#body + iframe {
+	float: left;
+}
+
+#body h3 {
+	color: #4e689e;
+}
+
+#body h3.description {
+	display: none;
+}
+
+#body td {
+	color: #000;
+	font: 13px/20px Arial, Helvetica, sans-serif;
+}
+
+#body .chart {
+	height: 120px;
+	margin: 0 auto;
+}
+
+#body .left {
+	clear: both;
+	float: left;
+	margin: 10px 12px 10px 0;
+}
+
+#body .right {
+	clear: both;
+	float: right;
+	margin: 10px 0 10px 12px;
+}
+
+#body .two-column,
+#body .three-column,
+#body .four-column {
+	width: 852px;
+	padding: 0;
+}
+
+#body .column {
+	float: left;
+	padding: 0 6px;
+	margin: -20px 12px -20px 0;
+}
+
+#body .last.column {
+	margin-right: 0;
+}
+
+#body .two-column .column {
+	width: 408px;
+}
+
+#body .three-column .column {
+	width: 264px;
+}
+
+#body .four-column .column {
+	width: 192px;
+}
+
+#body .two-column:after,
+#body .three-column:after,
+#body .four-column:after {
+	content: "\20";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+#main {
+	padding: 0 6px;
+}
+
+#main .error {
+	color: #f90;
+	margin: 20px 0 20px -12px;
+	padding-left: 9px;
+	border-left: 3px double #fb5;
+}
+
+#main .statistic {
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 30px;
+	display: block;
+}
+
+#main .two-column,
+#main .three-column,
+#main .four-column {
+	margin: 0 -6px;
+}
+
+#main div.data {
+	margin: 20px -6px;
+	overflow: hidden;
+}
+
+#main table.data {
+	width: 864px;
+	margin: 0 -6px;
+	border-spacing: 0;
+}
+
+#main .legend .rare, #main table.data .rare td {
+	background-color: #f0eebb;
+}
+
+#main .legend .unknown-frequency, #main table.data .unknown-frequency td {
+	background-color: #f7f6dd;
+}
+
+#main .legend .major, #main table.data .major td {
+	color: #ababab;
+}
+
+#main table.data th, #main table.data td {
+	text-align: left;
+	padding: 2px 12px;
+}
+
+#main table.data th {
+	background: #666;
+	color: #fff;
+}
+
+#main table.data td {
+	border-bottom: 1px solid #ddd;
+}
+
+#main table.data .number {
+	text-align: right;
+}
+
+#main table.data .dim {
+	color: #999;
+}
+
+#main table.data th.sort-ascending,
+#main table.data th.sort-descending {
+	background: #888;
+	padding: 2px 6px;
+	border-left: 6px solid #666;
+	border-right: 6px solid #666;
+}
+
+#main table.data th.sort-ascending div {
+	background: url(arrow-up.gif) center right no-repeat;
+}
+
+#main table.data th.sort-descending div {
+	background: url(arrow-down.gif) center right no-repeat;
+}
+
+#main table.data th.sort-ascending.number div,
+#main table.data th.sort-descending.number div {
+	background-position: center left;
+}
+
+#main table.data td a {
+	font-weight: normal;
+	text-decoration: none;
+}
+
+#main table.data .major td a {
+	color: #cad4e9;
+}
+
+#foot {
+	min-width: 852px;
+	color: #5d7cbb;
+	padding: 0 24px;
+}
+
+#foot > div {
+	width: 852px;
+	margin: 0 auto;
+	border-top: 1px solid #dfe5f1;
+}
+
+#foot p {
+	color: #5d7cbb;
+	font: 13px/20px Arial, Helvetica, sans-serif;
+	margin: 10px 0;
+}
+
+#foot a, #foot a:hover {
+	color: #5c7ab7;
+}
+
+#foot .link {
+	font-weight: bold;
+}
+
+#foot .current {
+	color: #7f97c9;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+#foot .bullet {
+	color: #7f97c9;
+}
+
+#foot #breadcrumbs {
+	float: left;
+	padding: 10px 6px;
+}
+
+#foot #breadcrumbs .arrow {
+	color: #7f97c9;
+	font-weight: bold;
+}
+
+#foot #copyright {
+	text-align: right;
+	padding: 10px 6px;
+}

@@ -1,0 +1,78 @@
+/*
+stylesheet -- iphone version
+(C) 2007-2008 Xiaodi Wu
+*/
+
+body {
+	-webkit-text-size-adjust: none;
+}
+
+form div.wrapper {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+form div.wrapper p {
+	margin: 0 !important;
+}
+
+input.file, input.text, input.password, textarea {
+	width: 308px !important;
+}
+
+input.wide.text, input.wide.password, textarea.wide {
+	width: 308px !important;
+}
+
+#head {
+	min-width: 320px !important;
+	padding: 20px 0 !important;
+}
+
+#head > div {
+	width: 320px !important;
+}
+
+#head #menu {
+	margin-left: 158px !important;
+}
+
+#head #menu .bullet {
+	display: none;
+}
+
+#head #menu .link {
+	white-space: nowrap;
+}
+
+#body {
+	min-width: 320px !important;
+	padding: 0 !important;
+}
+
+#body > div {
+	width: 320px !important;
+}
+
+#body .two-column, #body .four-column {
+	width: 308px !important;
+}
+
+#body .two-column .column, #body .four-column .column {
+	float: none !important;
+	width: auto !important;
+	margin: 0 !important;
+}
+
+#body .two-column:after, #body .four-column:after {
+	content: none !important;
+}
+
+#foot {
+	min-width: 320px !important;
+	padding: 0 !important;
+}
+
+#foot > div {
+	width: 320px !important;
+}

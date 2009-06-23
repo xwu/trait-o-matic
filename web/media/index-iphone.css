@@ -1,0 +1,52 @@
+/*
+index stylesheet -- iphone version
+(C) 2008 Xiaodi Wu
+*/
+
+#subhead {
+	min-width: 320px !important;
+	padding: 0 !important;
+}
+
+#subhead > div {
+	width: 320px !important;
+	margin: 0 !important;
+}
+
+#subhead h2 {
+	display: none;
+}
+
+#submenu .current, #submenu .link {
+	background-image: none !important;
+	width: 94px !important;
+}
+
+#submenu .bullet {
+	width: 1px !important;
+}
+
+#glider .scroller .section {
+	width: 308px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+#glider .scroller .link {
+	width: 260px !important;
+	text-align: left !important;
+	margin: 10px 0 !important;
+	padding: 0 24px !important;
+}
+
+#glider .scroller .link img {
+	display: none;
+}
+
+#glider .scroller .link img + br {
+	display: none;
+}
+
+.js .scroller {
+	width: 308px !important;
+}

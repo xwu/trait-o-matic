@@ -1,0 +1,48 @@
+/*
+stylesheet -- ie/win version
+(C) 2008 Xiaodi Wu
+*/
+
+body {
+	text-align: center;
+}
+
+/* --- */
+
+input.checkbox {
+	margin-bottom: 2px;
+}
+
+input.radio {
+	margin-bottom: 1px;
+}
+
+/* --- */
+
+#head {
+	text-align: left;
+}
+
+#body {
+	text-align: left;
+}
+
+#body > div {
+	margin: 20px auto;
+}
+
+#main {
+	margin: 20px auto;
+}
+
+#main table.data {
+	border-collapse: expression('separate', cellSpacing = '0');
+}
+
+#foot {
+	text-align: left;
+}
+
+#foot #breadcrumbs {
+	margin-top: 10px;
+}

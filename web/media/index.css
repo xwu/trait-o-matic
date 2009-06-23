@@ -1,0 +1,192 @@
+/*
+index stylesheet
+(C) 2008 Xiaodi Wu
+*/
+
+#subhead {
+	overflow: hidden;
+	/* overflow specified for the sake of
+	   vertical margins, and for centring tabs */
+	min-width: 852px;
+	background: #dfe5f1;
+	color: #000;
+	padding: 0 24px;
+}
+
+#subhead > div {
+	position: relative;
+	width: 852px;
+	margin: 40px auto 0;
+}
+
+#subhead > div:after {
+	content: "\20";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+/* equivalent to #main */
+#subhead h2 {
+	color: #4e689e;
+	padding: 0 6px;	
+}
+
+#subhead h2 > span {
+	background: url(subhead-h2.gif) center right no-repeat;
+	padding-right: 54px;
+}
+
+#subhead #submenu {
+	float: left;
+	position: relative;
+	left: 50%;
+}
+
+#subhead #submenu p {
+	float: left;
+	position: relative;
+	left: -50%;
+	margin: 0;
+}
+
+#submenu .current, #submenu .link {
+	float: left;
+	overflow: hidden;
+	width: 120px;
+	height: 2.15em;
+	color: #5d7cbb;
+	font: 13px/2.15em Arial, Helvetica, sans-serif;
+	text-align: center;
+	padding: 1px 6px 0;
+}
+
+#submenu .current {
+	background: #fff url(current-tab.gif) top center no-repeat;
+	font-weight: bold;
+	border-bottom: 1px solid #fff;
+}
+
+#submenu .link {
+	background: #eff2f8 url(tab.gif) top center no-repeat;
+	border-bottom: 1px solid #dfe5f1;
+}
+
+#submenu .link a {
+	color: #5d7cbb;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+#submenu .bullet {
+	float: left;
+	overflow: hidden;
+	width: 12px;
+	height: 12px;
+	visibility: hidden;
+}
+
+#glider {
+	margin: -10px auto;
+}
+
+#glider .scroller > div:after {
+	content: "\20";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;	
+}
+
+#glider .scroller .section {
+	float: left;		
+	width: 720px;
+	padding: 0 60px;
+	overflow: hidden;
+}
+
+#glider .scroller .link {
+	float: left;
+	width: 120px;
+	text-align: center;
+	padding: 0 6px;
+	margin: 10px 6px;
+}
+
+#glider .scroller .link a {
+	color: #5d7cbb;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+#glider .scroller .link img {
+	background: #fff;
+	padding: 4px;
+	border: 1px solid #7f97c9;
+}
+
+.js {
+	position: relative;
+}
+
+.js .scroller { 
+	width: 840px;
+	overflow: hidden;
+}
+
+.js .scroller > div {
+	width: 10080px;
+}
+
+.js .nav {
+	display: table;
+	margin: 0 auto;
+}
+
+.js .nav a {
+	display: table-cell;
+	background: url(glider.gif) center no-repeat;
+	width: 12px;
+	height: 10px;
+}
+
+.js .nav a.current {
+	background: url(glider-current.gif) center no-repeat;
+}
+
+.js .prev, .js .next {
+	display: block;
+	position: absolute;
+	bottom: 50%;
+	width: 11px;
+	height: 15px;
+	cursor: pointer;
+}
+
+.js .prev {
+	left: 0;
+	background: url(glider-prev.gif) center no-repeat;
+}
+
+.js .next {
+	right: 0;
+	background: url(glider-next.gif) center no-repeat;
+}
+
+.submit .label.js {
+	float: left;
+	background: url(blue-spinner.gif) center left no-repeat;
+	line-height: 24px;
+	padding-left: 36px;	
+}
+
+.toggle.js {
+	background: url(toggle-open.gif) center left no-repeat;
+	padding-left: 16px;
+	cursor: pointer;
+}
+
+.toggle.closed.js {
+	background: url(toggle-closed.gif) center left no-repeat;
+}

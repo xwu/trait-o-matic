@@ -1,0 +1,31 @@
+/*
+index stylesheet -- ie/win version
+(C) 2008 Xiaodi Wu
+*/
+
+#subhead {
+	text-align: left;
+}
+
+#subhead > div {
+	margin-top: 20px;
+	margin-bottom: -20px;
+}
+
+#glider {
+	text-align: center;
+}
+
+#glider .scroller {
+	text-align: left;
+}
+
+#glider .scroller .section {
+	width: 840px;
+	margin-bottom: 10px;
+}
+
+.js .nav a {
+	display: inline-block;
+	margin-top: 10px;
+}

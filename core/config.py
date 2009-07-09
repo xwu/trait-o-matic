@@ -24,4 +24,8 @@ HGMD_USER = "reader"
 HGMD_PASSWD = "shakespeare"
 HGMD_DATABASE = "hgmd_pro"
 
+GENOTYPE_USER = "updater"
+GENOTYPE_PASSWD = "shakespeare"
+GENOTYPE_DATABASE = "genotypes"
+
 REFERENCE_GENOME = "/var/trait/hg18.2bit"

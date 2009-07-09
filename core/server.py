@@ -94,6 +94,7 @@ def main():
 		         'F': os.path.join(script_dir, "gff_morbid_map.py"),
 		         'G': os.path.join(script_dir, "gff_snpedia_map.py"),
 		         'H': os.path.join(script_dir, "json_allele_frequency_query.py"),
+		         'I': os.path.join(script_dir, "json_to_job_database.py"),
 		         'Z': os.path.join(script_dir, "server.py"),
 		         'in': genotype_file,
 		         'reference': REFERENCE_GENOME,
@@ -117,6 +118,7 @@ def main():
 		python '%(F)s' '%(3)s' > '%(6)s'
 		python '%(G)s' '%(2)s' > '%(7)s'
 		python '%(H)s' '%(4)s' '%(5)s' '%(6)s' '%(7)s' --in-place
+		python '%(I)s' '%(4)s' '%(5)s' '%(6)s' '%(7)s'
 		touch '%(0)s'
 		python '%(Z)s' -t '%(url)s' '%(4)s' 'out/omim' '%(token)s'
 		python '%(Z)s' -t '%(url)s' '%(5)s' 'out/hgmd' '%(token)s'

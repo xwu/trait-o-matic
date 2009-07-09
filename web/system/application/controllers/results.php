@@ -102,31 +102,38 @@ class Results extends Controller {
 		//TODO: error out if no file is found
 		
 		// read results
-		$data['phenotypes']['omim'] = $this->_load_output_data('omim', $most_recent_job['id']);
-		$data['phenotypes']['snpedia'] = $this->_load_output_data('snpedia', $most_recent_job['id']);
-		$data['phenotypes']['hgmd'] = $this->_load_output_data('hgmd', $most_recent_job['id']);
-		$data['phenotypes']['morbid'] = $this->_load_output_data('morbid', $most_recent_job['id']);
+		$job_dir = basename(dirname($phenotype_path));
+		$data['phenotypes']['omim'] = $this->_load_output_data('omim', $job_dir);
+		$data['phenotypes']['snpedia'] = $this->_load_output_data('snpedia', $job_dir);
+		$data['phenotypes']['hgmd'] = $this->_load_output_data('hgmd', $job_dir);
+		$data['phenotypes']['morbid'] = $this->_load_output_data('morbid', $job_dir);
 			
 		//TODO: set session variable, if necessary
 		$this->load->view('results', $data);
 	}
 	
-	function _load_output_data($kind, $job)
+	function _load_output_data($kind, $job_dir)
 	{
-		$this->load->model('File', 'file', TRUE);
-		$this->load->helper('file');
+		$this->load->model('Genotype', 'genotype', TRUE);
 		$this->load->helper('json');
 				
-		$file = $this->file->get(array('kind' => "out/{$kind}", 'job' => $job), 1);
-		$data = array();
-		if ($file)
-		{
-			$path = $file['path'];
-			foreach (preg_split('/[\r\n]+/', read_file($path), -1, PREG_SPLIT_NO_EMPTY) as $line)
-			{
-				$data[] = get_object_vars(json_decode($line));
+		$data = $this->genotype->get($job_dir, array('module' => $kind));
+
 				// default sort; first obtain list of columns by which to sort
 				foreach ($data as $key => $row) {
+			if (!array_key_exists ('taf', $row) ||
+			    !ereg("^{", $row['taf']))
+				unset ($data[$key]['taf']);
+			else
+				$data[$key]['taf'] = json_decode($row['taf']);
+			if (!array_key_exists ('maf', $row) ||
+			    !ereg("^{", $row['maf']))
+				unset ($data[$key]['maf']);
+			else
+				$data[$key]['maf'] = json_decode($row['maf']);
+
+			if (!isset ($row['gene'])) unset($data[$key]['gene']);
+
 					// to have chromosomes sort correctly, we convert X, Y, M (or MT) to numbers
 					$chromosome[$key]  = str_replace('chr', '', $row['chromosome']);
 					switch ($chromosome[$key])
@@ -152,8 +159,6 @@ class Results extends Controller {
 				}
 				@array_multisort($chromosome, SORT_NUMERIC, $coordinates, SORT_NUMERIC,
 				                 $gene, $amino_acid_position, SORT_NUMERIC, $phenotype, $data);
-			}
-		}
 		return $data;
 	}
 	

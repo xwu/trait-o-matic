@@ -18,7 +18,25 @@ from utils.biopython_utils import reverse_complement
 from config import DB_HOST, GENOTYPE_USER, GENOTYPE_PASSWD, GENOTYPE_DATABASE
 
 query_drop = "DROP TABLE IF EXISTS `%(table)s`"
-query_create = "CREATE TABLE IF NOT EXISTS `%(table)s` like genotype_template"
+query_create = '''
+CREATE TABLE IF NOT EXISTS `%(table)s` (
+  `chromosome` varchar(12) NOT NULL,
+  `coordinates` int(10) unsigned NOT NULL,
+  `module` varchar(15) NOT NULL,
+  `genotype` varchar(3) default NULL,
+  `ref_allele` char(1) default NULL,
+  `trait_allele` char(1) default NULL,
+  `gene` varchar(12) default NULL,
+  `amino_acid_change` varchar(12) default NULL,
+  `zygosity` enum('hom','het') default NULL,
+  `variant` text,
+  `phenotype` varchar(255) default NULL,
+  `reference` text NOT NULL,
+  `taf` varchar(255) default NULL,
+  `maf` varchar(255) default NULL,
+  PRIMARY KEY  (`chromosome`,`coordinates`,`module`,`phenotype`(128),`reference`(128))
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
+'''
 
 query = '''
 set chromosome=%(chromosome)s, coordinates=%(coordinates)s, module=%(module)s, genotype=%(genotype)s, ref_allele=%(ref_allele)s, trait_allele=%(trait_allele)s, gene=%(gene)s, amino_acid_change=%(amino_acid_change)s, zygosity=%(zygosity)s, variant=%(variant)s, phenotype=%(phenotype)s, reference=%(reference)s, taf=%(taf)s, maf=%(maf)s;

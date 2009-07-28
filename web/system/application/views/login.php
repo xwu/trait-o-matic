@@ -58,7 +58,7 @@ header("Pragma: no-cache");
 <?php if (isset($error)): ?>
 					<div class="error"><div><?php echo $error; ?></div></div>
 <?php endif; ?>
-					<form name="results-form" id="results-form" method="POST" action="/results/">
+					<form name="results-form" id="results-form" method="POST" action="<?php if (isset($redirect)): echo $redirect; else: ?>/results/<?php endif; ?>">
 						<div class="wrapper">
 							<p><label class="label">Name<br>
 							<input type="text" class="text" name="username" size="40" id="username"></label></p>

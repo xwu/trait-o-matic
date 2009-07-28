@@ -60,6 +60,36 @@ header("Pragma: no-cache");
 					<h3><?php echo $username; ?></h3>
 					<p>Date of birth: <?php echo $phenotypes['date-of-birth']; ?><br>
 					<?php echo ucfirst(lang($phenotypes['sex'])); ?>, <?php function r($v, $w) { if ($v != '') { $v .= ', '; } $v .= lang($w); return $v; } print array_reduce($phenotypes['ancestry'], 'r'); ?></p>
+					<p>Download <a href="/download/ns/<?php echo urlencode($job_id); ?>">nsSNPs</a> or <a href="/download/genotype/<?php echo urlencode($job_id); ?>">source data (all SNPs)</a></p>
+<?php
+if (!$public):
+$public_mode_strings = array(
+	-1 => 'only you',
+	0 => 'only you and expert curators',
+	1 => 'everyone'
+);
+// these are just for show to express
+// what it is that users, curators, and
+// others may do at each of the three
+// modes
+//
+// group = curators
+// w = curate
+// x = reprocess, etc.
+$public_mode_symbols = array(
+	-1 => '700',
+	0 => '760',
+	1 => '764'
+);
+$public_mode_actions = array(
+	-1 => 'Restrict access to only me',
+	0 => 'Restrict access to only me and expert curators',
+	1 => 'Grant access to everyone (public sample)'
+);
+?>
+					<p>Currently, <strong><?php echo htmlspecialchars($public_mode_strings[$job_public_mode]); ?></strong> may view these results<?php foreach($public_mode_actions as $k => $v): if ($job_public_mode != $k): ?><br><a href="/chmod/<?php echo urlencode($public_mode_symbols[$k]); ?>/<?php echo urlencode($job_id); ?>"><?php echo htmlspecialchars($v); ?></a><?php endif; endforeach; ?></p>
+					<p><a href="/reprocess/<?php echo urlencode($job_id); ?>" onclick="return window.confirm('Are you sure you want to discard current results and reprocess this query?')">Reprocess this query</a> &nbsp;&bull;&nbsp; <a href="/logout/">Log out</a></p>
+<?php endif; ?>
 				</div>
 				<div class="last column">
 					<p id="allele-frequency-legend" class="legend"><strong>Highlighting by allele frequency</strong><br>

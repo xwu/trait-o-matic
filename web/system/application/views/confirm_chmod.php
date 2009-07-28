@@ -41,16 +41,16 @@ header("Pragma: no-cache");
 			<p>
 				<span class="link"><a href="/">View Samples</a></span>
 				<span class="bullet"> &nbsp;&bull;&nbsp; </span>
-				<span class="current">Submit Query</span>
+				<span class="link"><a href="/query/">Submit Query</a></span>
 				<span class="bullet"> &nbsp;&bull;&nbsp; </span>
-				<span class="link"><a href="/results/">Retrieve Results</a></span>
+				<span class="current">Retrieve Results</span>
 			</p>
 		</div>
 	</div></div>
 	<div id="body"><div>
 		<div id="main">
-			<h3><?php if (isset($heading)): echo htmlspecialchars($heading); else: ?>You&rsquo;re Done!<?php endif; ?></h3>
-			<p>If you provided an email address, we&rsquo;ll send you a notification email when results are ready. You&rsquo;ll need to use the user name and password you just selected to <a href="/results/">retrieve your results</a>.</p>
+			<h3><?php if (isset($heading)): echo htmlspecialchars($heading); else: ?>Settings Updated<?php endif; ?></h3>
+			<p><a href="/results/">Return to your results &rarr;</a></p>
 		</div>
 	</div></div>
 	<div id="foot"><div>

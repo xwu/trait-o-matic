@@ -42,6 +42,9 @@
 
 $route['default_controller'] = "samples";
 $route['scaffolding_trigger'] = "";
+$route['chmod/(:any)/(:any)'] = "results/chmod/$1/$2";
+$route['download/(:any)/(:any)'] = "results/download/$1/$2";
+$route['reprocess/(:any)'] = "reprocess/index/$1";
 $route['samples/(:any)'] = "results/samples/$1";
 
 /* End of file routes.php */
